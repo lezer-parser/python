@@ -1,0 +1,34 @@
+{
+  "name": "lezer-python",
+  "version": "0.8.0",
+  "description": "Lezer-based Python grammar",
+  "main": "dist/index.cjs",
+  "type": "module",
+  "exports": {
+    "import": "./dist/index.es.js",
+    "require": "./dist/index.cjs"
+  },
+  "module": "dist/index.es.js",
+  "types": "dist/index.d.ts",
+  "author": "Marijn Haverbeke <marijnh@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "lezer-generator": "^0.8.3",
+    "mocha": "^7.1.1",
+    "rollup": "^1.10.0",
+    "rollup-plugin-node-resolve": "^4.2.3"
+  },
+  "dependencies": {
+    "lezer": "^0.8.0"
+  },
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/lezer-parser/python.git"
+  },
+  "scripts": {
+    "build": "lezer-generator src/python.grammar -o src/parser && rollup -c",
+    "build-debug": "lezer-generator src/python.grammar --names -o src/parser && rollup -c",
+    "prepare": "npm run build",
+    "test": "mocha test/test-*.js"
+  }
+}
