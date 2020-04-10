@@ -2,8 +2,9 @@
   and @left,
   or @left,
   compare @left,
+  bitor @left,
   xor @left,
-  and @left,
+  bitand @left,
   shift @left,
   plus @left,
   times @left,
@@ -137,8 +138,9 @@ expression {
 YieldExpression { kw<"yield"> (kw<"from"> test | commaSep<test | "*" expression>) }
 
 BinaryExpression {
+  expression !bitor op<"|"> expression |
   expression !xor op<"^"> expression |
-  expression !and op<"&"> expression |
+  expression !bitand op<"&"> expression |
   expression !shift op<"<<" | ">>"> expression |
   expression !plus op<"+" | "-"> expression |
   expression !times op<"*" | "@" | "/" | "%" | "//"> expression |
