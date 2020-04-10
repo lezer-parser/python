@@ -1,0 +1,218 @@
+@precedence {
+  and @left,
+  or @left,
+  compare @left,
+  xor @left,
+  and @left,
+  shift @left,
+  plus @left,
+  times @left,
+  prefix,
+  power @left,
+  trail,
+  cond
+}
+
+@top Script { (newline | statement)+ }
+
+@skip { space | Comment | bracketedNewline }
+
+Decorator { "@" DottedName ArgList? newline }
+
+FunctionDefinition { kw<"async">? kw<"def"> VariableDefinition ParamList ("->" test)? Body }
+
+ClassDefinition { kw<"class"> VariableDefinition ArgList? Body }
+
+param { VariableDefinition (":" test)? (op<"="> test)? | "*" VariableDefinition? | "**" VariableDefinition | "/" }
+
+ParamList { "(" commaSep<param>? ")" }
+
+statement { simpleStatement | compoundStatement }
+
+simpleStatement { smallStatement (";" smallStatement?)* newline }
+
+smallStatement {
+  ExpressionStatement |
+  DeleteStatement { kw<"del"> commaSep<expression> } |
+  PassStatement { kw<"pass"> } |
+  BreakStatement { kw<"break"> } |
+  ContinueStatement { kw<"continue"> } |
+  ReturnStatement { kw<"return"> commaSep<test | "*" expression> } |
+  RaiseStatement { kw<"raise"> (test (kw<"from"> test)?)? } |
+  ImportStatement |
+  ScopeStatement { (kw<"global"> | kw<"nonlocal">) commaSep<VariableName> } |
+  AssertStatement { kw<"assert"> commaSep<test> }
+}
+
+ExpressionStatement { // FIXME different nodes for assigned variables?
+  commaSep<"*" expression | test> (
+    UpdateOp (YieldExpression | commaSep<test>) |
+    (":" test)? (op<"="> (YieldExpression | commaSep<"*" expression | test>))?
+  )
+}
+
+ImportStatement {
+  kw<"import"> DottedName (kw<"as"> VariableDefinition)? |
+  kw<"from"> (("." | "...")+ DottedName? | DottedName) kw<"import"> ("*" | "(" importedNames ")" | importedNames)
+}
+importedNames { commaSep<VariableDefinition | VariableName kw<"as"> VariableDefinition> }
+
+commaSep<expr> { expr ("," expr?)* }
+
+compoundStatement {
+  IfStatement |
+  WhileStatement { kw<"while"> testNamed Body elseClause? } |
+  ForStatement { kw<"async">? kw<"for"> commaSep<"*"? expression> kw<"in"> commaSep<test> Body elseClause? } |
+  TryStatement |
+  WithStatement { kw<"async">? kw<"with"> commaSep<test (kw<"as"> VariableDefinition)?> Body } |
+  FunctionDefinition |
+  ClassDefinition |
+  DecoratedStatement { Decorator+ (ClassDefinition | FunctionDefinition) }
+}
+
+elseClause { kw<"else"> Body }
+
+IfStatement {
+  kw<"if"> testNamed Body
+  (kw<"elif"> testNamed? Body)*
+  elseClause?
+}
+
+TryStatement {
+  kw<"try"> Body
+  ((kw<"except"> test kw<"as"> VariableDefinition Body)+ elseClause)?
+  kw<"finally"> Body
+}
+
+Body { ":" (simpleStatement | newline enterBody statement+ leaveBody) }
+
+test {
+ testInner |
+ CondExpression { testInner !cond kw<"if"> testInner kw<"else"> test } |
+ LambdaExpression { kw<"lambda"> ParamList ":" test }
+}
+
+testNoCond {
+  testInner |
+  LambdaExpression { kw<"lambda"> ParamList ":" testNoCond }
+}
+
+testNamed {
+  test | NamedExpression { test op<":="> test }
+}
+
+testInner { binaryTest | unaryTest | expression }
+
+binaryTest[name="BinaryExpression"] {
+  testInner !or kw<"or"> testInner |
+  testInner !and kw<"and"> testInner |
+  testInner !compare (CompareOp | kw<"in"> | kw<"not"> kw<"in"> | kw<"is"> kw<"not">?) testInner
+}
+
+unaryTest[name="UnaryExpression"] { kw<"not"> testInner }
+
+expression {
+  BinaryExpression |
+  UnaryExpression { !prefix op<"+" | "-" | "~"> expression } |
+  AwaitExpression { kw<"await"> expression } |
+  ParenthesizedExpression { "(" (testNamed | "*" expression | YieldExpression) ")" } |
+  TupleExpression { "(" (testNamed | "*" expression) (("," (testNamed | "*" expression))+ ","? | ",") ")" } |
+  ComprehensionExpression { "(" (testNamed | "*" expression) compFor ")" } |
+  ArrayExpression { "[" commaSep<testNamed | "*" expression>? "]" } |
+  ArrayComprehensionExpression { "[" (testNamed | "*" expression) compFor "]" } |
+  DictionaryExpression { "{" commaSep<test ":" test | "**" expression>? "}" } |
+  DictionaryComprehensionExpression { "{" (test ":" test | "**" expression) compFor "}" } |
+  SetExpression { "{" commaSep<test | "*" expression> "}" } |
+  SetComprehensionExpression { "{" (test | "*" expression) compFor "}" } |
+  CallExpression { expression !trail ArgList } |
+  MemberExpression { expression !trail ("[" commaSep<test | test? ":" test? (":" test?)?> "]" | "." PropertyName) } |
+  VariableName |
+  Number |
+  String { (shortString | longString)+ } |
+  Ellipsis { "..." } |
+  kw<"None"> |
+  @specialize[name=Boolean]<identifier, "True" | "False">
+}
+
+YieldExpression { kw<"yield"> (kw<"from"> test | commaSep<test | "*" expression>) }
+
+BinaryExpression {
+  expression !xor op<"^"> expression |
+  expression !and op<"&"> expression |
+  expression !shift op<"<<" | ">>"> expression |
+  expression !plus op<"+" | "-"> expression |
+  expression !times op<"*" | "@" | "/" | "%" | "//"> expression |
+  expression !power op<"**"> expression
+}
+
+ArgList { "(" commaSep<argument>? ")" }
+
+argument { test compFor? | VariableDefinition op<"=" | ":="> test | "**" test | "*" test }
+
+compFor {
+  kw<"async">? kw<"for"> commaSep<expression> kw<"in"> testInner (compFor | compIf)?
+}
+
+compIf {
+  kw<"if"> testNoCond (compFor | compIf)?
+}
+
+VariableDefinition { identifier }
+
+VariableName { identifier }
+
+PropertyName { identifier }
+
+DottedName { identifier ("." identifier)* }
+
+// FIXME specialize further
+
+kw<term> { @specialize[name={term}]<identifier, term> }
+
+@external tokens bodyBounds from "./tokens" { enterBody, leaveBody }
+
+@tokens {
+  CompareOp { "<" | ">" | $[<>=!] "=" | "<>" }
+
+  UpdateOp { ($[+\-@%&|^] | "<<" | ">>" | "*" "*"? | "/" "/"?) "=" }
+
+  op<term> { term } // FIXME specialize
+
+  @precedence { longString, shortString, identifier }
+
+  identifierChar { std.asciiLetter | $[_\u{a1}-\u{10ffff}] }
+
+  identifier { identifierChar (std.digit | identifierChar)+ }
+
+  // FIXME properly parse interpolation, split long strings into multiple pieces
+
+  stringPrefix { $[rRuUfFbB] | $[fF] $[rR] | $[rR] $[fF] | $[bB] $[rR] | $[rR] $[bR] }
+
+  shortString { stringPrefix? ("'" (!['\\\n] | "\\" _)* "'"? | '"' (!["\\\n] | "\\" _)* '"'?) }
+
+  longString { stringPrefix? ("'''" longSingleContent* "'''" | '"""' longDoubleContent* '"""') }
+
+  longSingleContent { !['\\] | "\\" _ | "'" longSingle2 }
+  longSingle2 { !['\\] | "\\" _ | "'" longSingle3 }
+  longSingle3 { !['\\] | "\\" _ }
+
+  longDoubleContent { !["\\] | "\\" _ | '"' longDouble2 }
+  longDouble2 { !["\\] | "\\" _ | '"' longDouble3 }
+  longDouble3 { !["\\] | "\\" _ }
+
+  Number {
+    (std.digit ("_" | std.digit)* ("." std.digit ("_" | std.digit)*)? | "." std.digit ("_" | std.digit)*)
+      ($[eE] $[+\-]? std.digit ("_" | std.digit)*)? $[jJ]? |
+    "0" $[bB] $[_01]+ |
+    "0" $[oO] $[_0-7]+ |
+    "0" $[xX] $[_0-9a-fA-F]+
+  }
+
+  Comment { "#" ![\n]* }
+
+  space { ($[ \t\f] | "\\\n")+ }
+
+  newline { "\n" }
+}
+
+@external tokens bracketedNewline from "./tokens" { bracketedNewline }
