@@ -16,7 +16,7 @@
 
 @top Script { (newline | statement)+ }
 
-@skip { space | Comment | bracketedNewline }
+@skip { space | newlineEmpty | newlineBracketed | Comment }
 
 Decorator { "@" DottedName ArgList? newline }
 
@@ -30,7 +30,7 @@ ParamList { "(" commaSep<param>? ")" }
 
 statement { simpleStatement | compoundStatement }
 
-simpleStatement { smallStatement (";" smallStatement?)* newline }
+simpleStatement { smallStatement (";" smallStatement?)* (newline | eof) }
 
 smallStatement {
   ExpressionStatement |
@@ -60,7 +60,7 @@ importedNames { commaSep<VariableDefinition | VariableName kw<"as"> VariableDefi
 
 commaSep<expr> { expr ("," expr?)* }
 
-compoundStatement {
+@export compoundStatement {
   IfStatement |
   WhileStatement { kw<"while"> testNamed Body elseClause? } |
   ForStatement { kw<"async">? kw<"for"> commaSep<"*"? expression> kw<"in"> commaSep<test> Body elseClause? } |
@@ -85,7 +85,7 @@ TryStatement {
   kw<"finally"> Body
 }
 
-Body { ":" (simpleStatement | newline enterBody statement+ leaveBody) }
+Body { ":" (simpleStatement | newline statement (continueBody statement)* endBody) }
 
 test {
  testInner |
@@ -171,8 +171,6 @@ DottedName { identifier ("." identifier)* }
 
 kw<term> { @specialize[name={term}]<identifier, term> }
 
-@external tokens bodyBounds from "./tokens" { enterBody, leaveBody }
-
 @tokens {
   CompareOp { "<" | ">" | $[<>=!] "=" | "<>" }
 
@@ -184,13 +182,13 @@ kw<term> { @specialize[name={term}]<identifier, term> }
 
   identifierChar { std.asciiLetter | $[_\u{a1}-\u{10ffff}] }
 
-  identifier { identifierChar (std.digit | identifierChar)+ }
+  identifier { identifierChar (std.digit | identifierChar)* }
 
   // FIXME properly parse interpolation, split long strings into multiple pieces
 
   stringPrefix { $[rRuUfFbB] | $[fF] $[rR] | $[rR] $[fF] | $[bB] $[rR] | $[rR] $[bR] }
 
-  shortString { stringPrefix? ("'" (!['\\\n] | "\\" _)* "'"? | '"' (!["\\\n] | "\\" _)* '"'?) }
+  shortString { stringPrefix? ("'" (!['\\\n\r] | "\\" _)* "'"? | '"' (!["\\\n\r] | "\\" _)* '"'?) }
 
   longString { stringPrefix? ("'''" longSingleContent* "'''" | '"""' longDoubleContent* '"""') }
 
@@ -210,11 +208,11 @@ kw<term> { @specialize[name={term}]<identifier, term> }
     "0" $[xX] $[_0-9a-fA-F]+
   }
 
-  Comment { "#" ![\n]* }
+  Comment { "#" ![\n\r]* }
 
-  space { ($[ \t\f] | "\\\n")+ }
-
-  newline { "\n" }
+  space { ($[ \t\f] | "\\" $[\n\r] )+ }
 }
 
-@external tokens bracketedNewline from "./tokens" { bracketedNewline }
+@external tokens newlines from "./tokens" { newline, newlineBracketed, newlineEmpty, eof }
+
+@external tokens bodyContinue from "./tokens" { continueBody, endBody }
