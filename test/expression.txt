@@ -14,3 +14,31 @@ Script(
     or, BinaryExpression(VariableName, CompareOp, None))),
   ExpressionStatement(BinaryExpression(BinaryExpression(VariableName, ArithOp, VariableName), BitOp,
     BinaryExpression(VariableName, BitOp, VariableName))))
+
+# Strings
+
+'foo' "bar"
+b'baz'
+'''long string
+on two lines'''
+
+"""also with double
+
+quotes"""
+
+==>
+
+Script(ExpressionStatement(String, String),
+       ExpressionStatement(String),
+       ExpressionStatement(String),
+       ExpressionStatement(String))
+
+# Format strings
+
+f'hello{22} abc {{ }} {d-1}'
+f"double {quoted}"
+
+==>
+
+Script(ExpressionStatement(FormatString(Number, BinaryExpression(VariableName, ArithOp, Number))),
+       ExpressionStatement(FormatString(VariableName)))

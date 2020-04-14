@@ -1,7 +1,6 @@
 @precedence {
   cond,
   trail,
-  assign @cut,
   power @left,
   prefix,
   times @left,
@@ -128,7 +127,7 @@ expression {
   MemberExpression { expression !trail ("[" commaSep<test | test? ":" test? (":" test?)?> "]" | "." PropertyName) } |
   VariableName |
   Number |
-  String { (shortString | longString)+ } |
+  (String | FormatString)+ |
   Ellipsis { "..." } |
   kw<"None"> |
   @specialize[name=Boolean]<identifier, "True" | "False">
@@ -168,12 +167,23 @@ DottedName { identifier ("." identifier)* }
 
 kw<term> { @specialize[name={term}]<identifier, term> }
 
+@skip {} {
+  String { shortString | longString }
+
+  FormatString {
+    formatStringStart<"'"> (formatString1Content | formatStringExpr)* "'" |
+    formatStringStart<'"'> (formatString2Content | formatStringExpr)* '"'
+  }
+}
+
+formatStringExpr { "{" test "}" }
+
 @tokens {
   CompareOp { "<" | ">" | $[<>=!] "=" | "<>" }
 
   UpdateOp { ($[+\-@%&|^] | "<<" | ">>" | "*" "*"? | "/" "/"?) "=" }
 
-  @precedence { longString, shortString, identifier }
+  @precedence { longString, shortString, formatStringStart<"'">, formatStringStart<'"'>, identifier }
 
   identifierChar { std.asciiLetter | $[_\u{a1}-\u{10ffff}] }
 
@@ -181,9 +191,16 @@ kw<term> { @specialize[name={term}]<identifier, term> }
 
   // FIXME properly parse interpolation, split long strings into multiple pieces
 
-  stringPrefix { $[rRuUfFbB] | $[fF] $[rR] | $[rR] $[fF] | $[bB] $[rR] | $[rR] $[bR] }
+  stringPrefix { $[rRuUbB] | $[bB] $[rR] | $[rR] $[bR] }
+
+  formatPrefix { $[fF] | $[fF] $[rR] | $[rR] $[fF] }
 
   shortString { stringPrefix? ("'" (!['\\\n\r] | "\\" _)* "'"? | '"' (!["\\\n\r] | "\\" _)* '"'?) }
+
+  formatStringStart<quote> { formatPrefix quote }
+
+  formatString1Content { !['{\\] | "\\" _ | "{{" }
+  formatString2Content { !["{\\] | "\\" _ | "{{" }
 
   longString { stringPrefix? ("'''" longSingleContent* "'''" | '"""' longDoubleContent* '"""') }
 
