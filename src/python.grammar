@@ -85,7 +85,7 @@ TryStatement {
   kw<"finally"> Body
 }
 
-Body { ":" (simpleStatement | newline statement (continueBody statement)* endBody) }
+Body { ":" (simpleStatement | newline statement (continueBody statement)* (endBody | eof)) }
 
 test {
  testInner |

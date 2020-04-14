@@ -1,0 +1,25 @@
+# Function definition
+
+def foo():
+  pass
+
+==>
+
+Script(FunctionDefinition(def,VariableDefinition,ParamList,Body(PassStatement(pass))))
+
+# Single-line function definition
+
+def foo(a, b): return a + b
+
+==>
+
+Script(FunctionDefinition(def,VariableDefinition,ParamList(VariableDefinition, VariableDefinition),
+  Body(ReturnStatement(return, BinaryExpression(VariableName, VariableName)))))
+
+# Conditional
+
+if a: b()
+
+==>
+
+Script(IfStatement(if,VariableName,Body(ExpressionStatement(CallExpression(VariableName,ArgList)))))
