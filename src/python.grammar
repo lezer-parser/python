@@ -1,3 +1,5 @@
+// FIXME Python 2 compatibility?
+
 @precedence {
   cond,
   trail,
@@ -18,23 +20,27 @@
 
 @skip { space | newlineEmpty | newlineBracketed | Comment }
 
-Decorator { "@" DottedName ArgList? newline }
+Decorator { At dottedName ArgList? newline }
 
-FunctionDefinition { kw<"async">? kw<"def"> VariableDefinition ParamList ("->" test)? Body }
+FunctionDefinition {
+  kw<"async">? kw<"def"> VariableName
+  ParamList { "(" commaSep<param>? ")" }
+  TypeDef { "->" test }?
+  Body
+}
 
-ClassDefinition { kw<"class"> VariableDefinition ArgList? Body }
+ClassDefinition { kw<"class"> VariableName ArgList? Body }
 
-param { VariableDefinition (":" test)? (AssignOp{"="} test)? | "*" VariableDefinition? | "**" VariableDefinition | "/" }
+param { (kw<"self"> | VariableName) TypeDef? (AssignOp{"="} test)? | "*" VariableName? | "**" VariableName | "/" }
 
-ParamList { "(" commaSep<param>? ")" }
+TypeDef { ":" test }
 
 statement { simpleStatement | compoundStatement }
 
 simpleStatement { smallStatement (";" smallStatement?)* (newline | eof) }
 
 smallStatement {
-  // FIXME possible to get VariableDefinition for variables in assign statements?
-  AssignStatement { expressions (":" test)? (AssignOp{"="} (YieldExpression | expressions))+ } |
+  AssignStatement { expressions TypeDef? (AssignOp{"="} (YieldExpression | expressions))+ } |
   UpdateStatement { expressions UpdateOp (YieldExpression | commaSep<test>) } |
   ExpressionStatement { expressions } |
   DeleteStatement { kw<"del"> commaSep<expression> } |
@@ -42,6 +48,7 @@ smallStatement {
   BreakStatement { kw<"break"> } |
   ContinueStatement { kw<"continue"> } |
   ReturnStatement { kw<"return"> commaSep<test | "*" expression> } |
+  YieldStatement { yield } |
   RaiseStatement { kw<"raise"> (test (kw<"from"> test)?)? } |
   ImportStatement |
   ScopeStatement { (kw<"global"> | kw<"nonlocal">) commaSep<VariableName> } |
@@ -51,10 +58,10 @@ smallStatement {
 expressions { commaSep<"*" expression | test> }
 
 ImportStatement {
-  kw<"import"> DottedName (kw<"as"> VariableDefinition)? |
-  kw<"from"> (("." | "...")+ DottedName? | DottedName) kw<"import"> ("*" | "(" importedNames ")" | importedNames)
+  kw<"import"> dottedName (kw<"as"> VariableName)? |
+  kw<"from"> (("." | "...")+ dottedName? | dottedName) kw<"import"> ("*" | "(" importedNames ")" | importedNames)
 }
-importedNames { commaSep<VariableDefinition | VariableName kw<"as"> VariableDefinition> }
+importedNames { commaSep<VariableName | VariableName kw<"as"> VariableName> }
 
 commaSep<expr> { expr ("," expr?)* }
 
@@ -63,7 +70,7 @@ commaSep<expr> { expr ("," expr?)* }
   WhileStatement { kw<"while"> testNamed Body elseClause? } |
   ForStatement { kw<"async">? kw<"for"> commaSep<"*"? expression> kw<"in"> commaSep<test> Body elseClause? } |
   TryStatement |
-  WithStatement { kw<"async">? kw<"with"> commaSep<test (kw<"as"> VariableDefinition)?> Body } |
+  WithStatement { kw<"async">? kw<"with"> commaSep<test (kw<"as"> VariableName)?> Body } |
   FunctionDefinition |
   ClassDefinition |
   DecoratedStatement { Decorator+ (ClassDefinition | FunctionDefinition) }
@@ -79,21 +86,26 @@ IfStatement {
 
 TryStatement {
   kw<"try"> Body
-  ((kw<"except"> test kw<"as"> VariableDefinition Body)+ elseClause)?
+  (kw<"except"> (test (kw<"as"> VariableName)?)? Body)*
+  elseClause?
   kw<"finally"> Body
 }
 
 Body { ":" (simpleStatement | newline statement (continueBody statement)* (endBody | eof)) }
 
+lambdaParam { (kw<"self"> | VariableName) (AssignOp{"="} test)? | "*" VariableName? | "**" VariableName }
+
+lambdaParams[name="ParamList"] { (lambdaParam ("," lambdaParam)*)? }
+
 test {
  testInner |
- CondExpression { testInner !cond kw<"if"> testInner kw<"else"> test } |
- LambdaExpression { kw<"lambda"> ParamList ":" test }
+ ConditionalExpression { testInner !cond kw<"if"> testInner kw<"else"> test } |
+ LambdaExpression { kw<"lambda"> lambdaParams ":" test }
 }
 
 testNoCond {
   testInner |
-  LambdaExpression { kw<"lambda"> ParamList ":" testNoCond }
+  LambdaExpression { kw<"lambda"> lambdaParams ":" testNoCond }
 }
 
 testNamed {
@@ -112,7 +124,7 @@ unaryTest[name="UnaryExpression"] { kw<"not"> testInner }
 
 expression {
   BinaryExpression |
-  UnaryExpression { !prefix ArithOp{"+" | "-" | "~"} expression } |
+  UnaryExpression { !prefix (ArithOp{"+" | "-"} | BitOp{"~"}) expression } |
   AwaitExpression { kw<"await"> expression } |
   ParenthesizedExpression { "(" (testNamed | "*" expression | YieldExpression) ")" } |
   TupleExpression { "(" (testNamed | "*" expression) (("," (testNamed | "*" expression))+ ","? | ",") ")" } |
@@ -128,12 +140,15 @@ expression {
   VariableName |
   Number |
   (String | FormatString)+ |
-  Ellipsis { "..." } |
+  "..." |
   kw<"None"> |
+  kw<"self"> |
   @specialize[name=Boolean]<identifier, "True" | "False">
 }
 
-YieldExpression { kw<"yield"> (kw<"from"> test | commaSep<test | "*" expression>) }
+yield { kw<"yield"> (kw<"from"> test | commaSep<test | "*" expression>) }
+
+YieldExpression { yield }
 
 BinaryExpression {
   expression !bitor BitOp{"|"} expression |
@@ -147,7 +162,7 @@ BinaryExpression {
 
 ArgList { "(" commaSep<argument>? ")" }
 
-argument { test compFor? | VariableDefinition AssignOp{"=" | ":="} test | "**" test | "*" test }
+argument { test compFor? | VariableName AssignOp{"=" | ":="} test | "**" test | "*" test }
 
 compFor {
   kw<"async">? kw<"for"> commaSep<expression> kw<"in"> testInner (compFor | compIf)?
@@ -157,39 +172,51 @@ compIf {
   kw<"if"> testNoCond (compFor | compIf)?
 }
 
-VariableDefinition { identifier ~maybeAssign }
+// FIXME Is it possible to distinguish between VariableName and VariableDefinition?
 
-VariableName { identifier ~maybeAssign }
+VariableName { identifier }
 
-PropertyName { identifier }
+PropertyName { word }
 
-DottedName { identifier ("." identifier)* }
+dottedName { VariableName ("." VariableName)* }
 
 kw<term> { @specialize[name={term}]<identifier, term> }
 
 @skip {} {
-  String { shortString | longString }
+  String {
+    shortString |
+    longStringStart<"'"> longString1Content* "'''" |
+    longStringStart<'"'> longString2Content* '"""'
+  }
 
   FormatString {
-    formatStringStart<"'"> (formatString1Content | formatStringExpr)* "'" |
-    formatStringStart<'"'> (formatString2Content | formatStringExpr)* '"'
+    formatStringStart<"'"> (formatString1Content | FormatReplacement)* "'" |
+    formatStringStart<'"'> (formatString2Content | FormatReplacement)* '"' |
+    longFormatStringStart<"'"> (longFormatString1Content | FormatReplacement)* "'''" |
+    longFormatStringStart<'"'> (longFormatString2Content | FormatReplacement)* '"""'
   }
+
+  formatStringSpec { FormatSpec { ":" (formatStringSpecChars | FormatReplacement)* } "}" }
 }
 
-formatStringExpr { "{" test "}" }
+FormatReplacement { "{" (YieldExpression | commaSep<"*"? test>) FormatConversion? (formatStringSpec | "}") }
 
 @tokens {
   CompareOp { "<" | ">" | $[<>=!] "=" | "<>" }
 
   UpdateOp { ($[+\-@%&|^] | "<<" | ">>" | "*" "*"? | "/" "/"?) "=" }
 
-  @precedence { longString, shortString, formatStringStart<"'">, formatStringStart<'"'>, identifier }
+  @precedence {
+    longStringStart<"'">, longStringStart<'"'>, longFormatStringStart<"'">, longFormatStringStart<'"'>,
+    shortString, formatStringStart<"'">, formatStringStart<'"'>,
+    identifier
+  }
 
   identifierChar { std.asciiLetter | $[_\u{a1}-\u{10ffff}] }
 
-  identifier { identifierChar (std.digit | identifierChar)* }
+  word { identifierChar (std.digit | identifierChar)* }
 
-  // FIXME properly parse interpolation, split long strings into multiple pieces
+  identifier { word }
 
   stringPrefix { $[rRuUbB] | $[bB] $[rR] | $[rR] $[bR] }
 
@@ -199,18 +226,32 @@ formatStringExpr { "{" test "}" }
 
   formatStringStart<quote> { formatPrefix quote }
 
+  FormatConversion { "!" $[sra] }
+
+  formatStringSpecChars { ![{}]+ }
+
   formatString1Content { !['{\\] | "\\" _ | "{{" }
   formatString2Content { !["{\\] | "\\" _ | "{{" }
 
-  longString { stringPrefix? ("'''" longSingleContent* "'''" | '"""' longDoubleContent* '"""') }
+  longStringStart<quote> { stringPrefix? quote quote quote }
 
-  longSingleContent { !['\\] | "\\" _ | "'" longSingle2 }
-  longSingle2 { !['\\] | "\\" _ | "'" longSingle3 }
-  longSingle3 { !['\\] | "\\" _ }
+  longString1Content { !['\\] | "\\" _ | "'" longString1_2 }
+  longString1_2 { !['\\] | "\\" _ | "'" longString1_3 }
+  longString1_3 { !['\\] | "\\" _ }
 
-  longDoubleContent { !["\\] | "\\" _ | '"' longDouble2 }
-  longDouble2 { !["\\] | "\\" _ | '"' longDouble3 }
-  longDouble3 { !["\\] | "\\" _ }
+  longString2Content { !["\\] | "\\" _ | '"' longString2_2 }
+  longString2_2 { !["\\] | "\\" _ | '"' longString2_3 }
+  longString2_3 { !["\\] | "\\" _ }
+
+  longFormatStringStart<quote> { formatPrefix quote quote quote }
+
+  longFormatString1Content { !['\\{] | "\\" _ | "'" longFormatString1_2 | "{{" }
+  longFormatString1_2 { !['\\{] | "\\" _ | "{{" | "'" longFormatString1_3 }
+  longFormatString1_3 { !['\\{] | "\\" _ | "{{" }
+
+  longFormatString2Content { !["\\{] | "\\" _ | "'" longFormatString2_2 | "{{" }
+  longFormatString2_2 { !["\\{] | "\\" _ | "{{" | "'" longFormatString2_3 }
+  longFormatString2_3 { !["\\{] | "\\" _ | "{{" }
 
   Number {
     (std.digit ("_" | std.digit)* ("." std.digit ("_" | std.digit)*)? | "." std.digit ("_" | std.digit)*)
@@ -222,7 +263,16 @@ formatStringExpr { "{" test "}" }
 
   Comment { "#" ![\n\r]* }
 
-  space { ($[ \t\f] | "\\" $[\n\r] )+ }
+  space { ($[ \t\f] | "\\" $[\n\r])+ }
+
+  At { "@" }
+
+  "..."[name=Ellipsis]
+
+  "(" ")" "[" "]" "{" "}"
+
+  "." "," ";" ":" "@" "*" "**"
+
 }
 
 @external tokens newlines from "./tokens" { newline, newlineBracketed, newlineEmpty, eof }
