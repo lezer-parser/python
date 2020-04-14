@@ -1,0 +1,16 @@
+# Operator precedence
+
+a + b * c - d**3
+a or b > 2 and c or d == None
+a + b | c & d
+
+==>
+
+Script(
+  ExpressionStatement(BinaryExpression(BinaryExpression(VariableName, ArithOp,
+    BinaryExpression(VariableName, ArithOp, VariableName)), ArithOp, BinaryExpression(VariableName, ArithOp, Number))),
+  ExpressionStatement(BinaryExpression(BinaryExpression(VariableName, or,
+    BinaryExpression(BinaryExpression(VariableName, CompareOp, Number), and, VariableName)),
+    or, BinaryExpression(VariableName, CompareOp, None))),
+  ExpressionStatement(BinaryExpression(BinaryExpression(VariableName, ArithOp, VariableName), BitOp,
+    BinaryExpression(VariableName, BitOp, VariableName))))

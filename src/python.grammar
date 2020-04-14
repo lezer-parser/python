@@ -1,17 +1,17 @@
 @precedence {
-  and @left,
-  or @left,
-  compare @left,
-  bitor @left,
-  xor @left,
-  bitand @left,
-  shift @left,
-  plus @left,
-  times @left,
-  prefix,
-  power @left,
+  cond,
   trail,
-  cond
+  power @left,
+  prefix,
+  times @left,
+  plus @left,
+  shift @left,
+  bitand @left,
+  xor @left,
+  bitor @left,
+  compare @left,
+  and @left,
+  or @left
 }
 
 @top Script { (newline | statement)+ }
@@ -24,7 +24,7 @@ FunctionDefinition { kw<"async">? kw<"def"> VariableDefinition ParamList ("->" t
 
 ClassDefinition { kw<"class"> VariableDefinition ArgList? Body }
 
-param { VariableDefinition (":" test)? (op<"="> test)? | "*" VariableDefinition? | "**" VariableDefinition | "/" }
+param { VariableDefinition (":" test)? (AssignOp{"="} test)? | "*" VariableDefinition? | "**" VariableDefinition | "/" }
 
 ParamList { "(" commaSep<param>? ")" }
 
@@ -48,7 +48,7 @@ smallStatement {
 ExpressionStatement { // FIXME different nodes for assigned variables?
   commaSep<"*" expression | test> (
     UpdateOp (YieldExpression | commaSep<test>) |
-    (":" test)? (op<"="> (YieldExpression | commaSep<"*" expression | test>))?
+    (":" test)? (AssignOp{"="} (YieldExpression | commaSep<"*" expression | test>))?
   )
 }
 
@@ -99,7 +99,7 @@ testNoCond {
 }
 
 testNamed {
-  test | NamedExpression { test op<":="> test }
+  test | NamedExpression { test AssignOp{":="} test }
 }
 
 testInner { binaryTest | unaryTest | expression }
@@ -114,7 +114,7 @@ unaryTest[name="UnaryExpression"] { kw<"not"> testInner }
 
 expression {
   BinaryExpression |
-  UnaryExpression { !prefix op<"+" | "-" | "~"> expression } |
+  UnaryExpression { !prefix ArithOp{"+" | "-" | "~"} expression } |
   AwaitExpression { kw<"await"> expression } |
   ParenthesizedExpression { "(" (testNamed | "*" expression | YieldExpression) ")" } |
   TupleExpression { "(" (testNamed | "*" expression) (("," (testNamed | "*" expression))+ ","? | ",") ")" } |
@@ -138,18 +138,18 @@ expression {
 YieldExpression { kw<"yield"> (kw<"from"> test | commaSep<test | "*" expression>) }
 
 BinaryExpression {
-  expression !bitor op<"|"> expression |
-  expression !xor op<"^"> expression |
-  expression !bitand op<"&"> expression |
-  expression !shift op<"<<" | ">>"> expression |
-  expression !plus op<"+" | "-"> expression |
-  expression !times op<"*" | "@" | "/" | "%" | "//"> expression |
-  expression !power op<"**"> expression
+  expression !bitor BitOp{"|"} expression |
+  expression !xor BitOp{"^"} expression |
+  expression !bitand BitOp{"&"} expression |
+  expression !shift BitOp{"<<" | ">>"} expression |
+  expression !plus ArithOp{"+" | "-"} expression |
+  expression !times ArithOp{"*" | "@" | "/" | "%" | "//"} expression |
+  expression !power ArithOp{"**"} expression
 }
 
 ArgList { "(" commaSep<argument>? ")" }
 
-argument { test compFor? | VariableDefinition op<"=" | ":="> test | "**" test | "*" test }
+argument { test compFor? | VariableDefinition AssignOp{"=" | ":="} test | "**" test | "*" test }
 
 compFor {
   kw<"async">? kw<"for"> commaSep<expression> kw<"in"> testInner (compFor | compIf)?
@@ -175,8 +175,6 @@ kw<term> { @specialize[name={term}]<identifier, term> }
   CompareOp { "<" | ">" | $[<>=!] "=" | "<>" }
 
   UpdateOp { ($[+\-@%&|^] | "<<" | ">>" | "*" "*"? | "/" "/"?) "=" }
-
-  op<term> { term } // FIXME specialize
 
   @precedence { longString, shortString, identifier }
 

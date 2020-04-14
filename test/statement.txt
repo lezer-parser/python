@@ -14,7 +14,7 @@ def foo(a, b): return a + b
 ==>
 
 Script(FunctionDefinition(def,VariableDefinition,ParamList(VariableDefinition, VariableDefinition),
-  Body(ReturnStatement(return, BinaryExpression(VariableName, VariableName)))))
+  Body(ReturnStatement(return, BinaryExpression(VariableName, ArithOp, VariableName)))))
 
 # Conditional
 
