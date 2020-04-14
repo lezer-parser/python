@@ -1,6 +1,7 @@
 @precedence {
   cond,
   trail,
+  assign @cut,
   power @left,
   prefix,
   times @left,
@@ -33,7 +34,10 @@ statement { simpleStatement | compoundStatement }
 simpleStatement { smallStatement (";" smallStatement?)* (newline | eof) }
 
 smallStatement {
-  ExpressionStatement |
+  // FIXME possible to get VariableDefinition for variables in assign statements?
+  AssignStatement { expressions (":" test)? (AssignOp{"="} (YieldExpression | expressions))+ } |
+  UpdateStatement { expressions UpdateOp (YieldExpression | commaSep<test>) } |
+  ExpressionStatement { expressions } |
   DeleteStatement { kw<"del"> commaSep<expression> } |
   PassStatement { kw<"pass"> } |
   BreakStatement { kw<"break"> } |
@@ -45,12 +49,7 @@ smallStatement {
   AssertStatement { kw<"assert"> commaSep<test> }
 }
 
-ExpressionStatement { // FIXME different nodes for assigned variables?
-  commaSep<"*" expression | test> (
-    UpdateOp (YieldExpression | commaSep<test>) |
-    (":" test)? (AssignOp{"="} (YieldExpression | commaSep<"*" expression | test>))?
-  )
-}
+expressions { commaSep<"*" expression | test> }
 
 ImportStatement {
   kw<"import"> DottedName (kw<"as"> VariableDefinition)? |
@@ -159,15 +158,13 @@ compIf {
   kw<"if"> testNoCond (compFor | compIf)?
 }
 
-VariableDefinition { identifier }
+VariableDefinition { identifier ~maybeAssign }
 
-VariableName { identifier }
+VariableName { identifier ~maybeAssign }
 
 PropertyName { identifier }
 
 DottedName { identifier ("." identifier)* }
-
-// FIXME specialize further
 
 kw<term> { @specialize[name={term}]<identifier, term> }
 

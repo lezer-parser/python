@@ -23,3 +23,11 @@ if a: b()
 ==>
 
 Script(IfStatement(if,VariableName,Body(ExpressionStatement(CallExpression(VariableName,ArgList)))))
+
+# Assignment
+
+a = 4
+
+==>
+
+Script(AssignStatement(VariableName, AssignOp, Number))
