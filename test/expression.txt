@@ -75,6 +75,17 @@ Script(
   ExpressionStatement(MemberExpression(VariableName, PropertyName)),
   ExpressionStatement(MemberExpression(MemberExpression(VariableName, PropertyName), PropertyName)))
 
+# Call expressions
+
+foo(x, y, **z) + bar(blah=20)
+
+==>
+
+Script(ExpressionStatement(BinaryExpression(
+  CallExpression(VariableName, ArgList(VariableName, VariableName, VariableName)),
+  ArithOp,
+  CallExpression(VariableName, ArgList(VariableName, AssignOp, Number)))))
+
 # Collection expressions
 
 [True, False, None]

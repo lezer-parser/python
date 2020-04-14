@@ -1,5 +1,3 @@
-// FIXME Python 2 compatibility?
-
 @precedence {
   cond,
   trail,
@@ -49,7 +47,8 @@ smallStatement {
   ContinueStatement { kw<"continue"> } |
   ReturnStatement { kw<"return"> commaSep<test | "*" expression> } |
   YieldStatement { yield } |
-  RaiseStatement { kw<"raise"> (test (kw<"from"> test)?)? } |
+  PrintStatement { kw<"print"> test } |
+  RaiseStatement { kw<"raise"> (test (kw<"from"> test | ("," test ("," test)?))?)? } |
   ImportStatement |
   ScopeStatement { (kw<"global"> | kw<"nonlocal">) commaSep<VariableName> } |
   AssertStatement { kw<"assert"> commaSep<test> }
@@ -86,9 +85,9 @@ IfStatement {
 
 TryStatement {
   kw<"try"> Body
-  (kw<"except"> (test (kw<"as"> VariableName)?)? Body)*
+  (kw<"except"> (test ((kw<"as"> | ",") VariableName)?)? Body)*
   elseClause?
-  kw<"finally"> Body
+  (kw<"finally"> Body)?
 }
 
 Body { ":" (simpleStatement | newline statement (continueBody statement)* (endBody | eof)) }

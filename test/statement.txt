@@ -257,3 +257,18 @@ x = 1 + \
 ==>
 
 Script(AssignStatement(VariableName, AssignOp, BinaryExpression(Number, ArithOp, Number)))
+
+# Python 2 compatibility
+
+print "hi"
+try:
+  raise Exception, "foo"
+except Exception, foo:
+  pass
+
+==>
+
+Script(
+  PrintStatement(print, String),
+  TryStatement(try, Body(RaiseStatement(raise, VariableName, String)),
+               except, VariableName, VariableName, Body(PassStatement(pass))))
