@@ -261,6 +261,8 @@ Script(AssignStatement(VariableName, AssignOp, BinaryExpression(Number, ArithOp,
 # Python 2 compatibility
 
 print "hi"
+print(print.something)
+
 try:
   raise Exception, "foo"
 except Exception, foo:
@@ -270,5 +272,6 @@ except Exception, foo:
 
 Script(
   PrintStatement(print, String),
+  ExpressionStatement(CallExpression(VariableName, ArgList(MemberExpression(VariableName, PropertyName)))),
   TryStatement(try, Body(RaiseStatement(raise, VariableName, String)),
                except, VariableName, VariableName, Body(PassStatement(pass))))

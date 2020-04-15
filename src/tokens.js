@@ -3,10 +3,11 @@ import {
   newline as newlineToken, eof, newlineEmpty, newlineBracketed, continueBody, endBody,
   ParenthesizedExpression, TupleExpression, ComprehensionExpression, ArrayExpression, ArrayComprehensionExpression,
   DictionaryExpression, DictionaryComprehensionExpression, SetExpression, SetComprehensionExpression,
-  compoundStatement
+  compoundStatement,
+  printKeyword
 } from "./parser.terms.js"
 
-const newline = 10, carriageReturn = 13, space = 32, tab = 9, hash = 35
+const newline = 10, carriageReturn = 13, space = 32, tab = 9, hash = 35, parenOpen = 40, dot = 46
 
 const bracketed = [
   ParenthesizedExpression, TupleExpression, ComprehensionExpression, ArrayExpression, ArrayComprehensionExpression,
@@ -111,3 +112,18 @@ export const bodyContinue = new ExternalTokenizer((input, token, stack) => {
   let indentHere = getIndent(input, token.start)
   token.accept(indentHere <= parentIndent ? endBody : continueBody, token.start)
 }, {contextual: true})
+
+export const legacyPrint = new ExternalTokenizer((input, token) => {
+  let pos = token.start
+  for (let print = "print", i = 0; i < print.length; i++, pos++)
+    if (input.get(pos) != print.charCodeAt(i)) return
+  let end = pos
+  if (/\w/.test(String.fromCharCode(input.get(pos)))) return
+  for (;; pos++) {
+    let next = input.get(pos)
+    if (next == space || next == tab) continue
+    if (next != parenOpen && next != dot && next != newline && next != carriageReturn && next != hash)
+      token.accept(printKeyword, end)
+    return
+  }
+})

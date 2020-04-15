@@ -47,7 +47,7 @@ smallStatement {
   ContinueStatement { kw<"continue"> } |
   ReturnStatement { kw<"return"> commaSep<test | "*" expression> } |
   YieldStatement { yield } |
-  PrintStatement { kw<"print"> test } |
+  PrintStatement { printKeyword test } |
   RaiseStatement { kw<"raise"> (test (kw<"from"> test | ("," test ("," test)?))?)? } |
   ImportStatement |
   ScopeStatement { (kw<"global"> | kw<"nonlocal">) commaSep<VariableName> } |
@@ -199,6 +199,8 @@ kw<term> { @specialize[name={term}]<identifier, term> }
 }
 
 FormatReplacement { "{" (YieldExpression | commaSep<"*"? test>) FormatConversion? (formatStringSpec | "}") }
+
+@external tokens legacyPrint from "./tokens.js" { printKeyword[name="print"] }
 
 @tokens {
   CompareOp { "<" | ">" | $[<>=!] "=" | "<>" }
