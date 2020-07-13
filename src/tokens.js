@@ -104,14 +104,14 @@ export const newlines = new ExternalTokenizer((input, token, stack) => {
   }
   token.accept(newlineToken, token.start + 1)
   Cache.for(input).set(scan, indent)
-}, {contextual: true})
+}, {contextual: true, fallback: true})
 
 export const bodyContinue = new ExternalTokenizer((input, token, stack) => {
   let parent = stack.startOf(parentStatement)
   let parentIndent = parent < 0 ? 0 : getIndent(input, parent)
   let indentHere = getIndent(input, token.start)
   token.accept(indentHere <= parentIndent ? endBody : continueBody, token.start)
-}, {contextual: true})
+}, {contextual: true, fallback: true})
 
 export const legacyPrint = new ExternalTokenizer((input, token) => {
   let pos = token.start
