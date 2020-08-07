@@ -1,3 +1,9 @@
+## 0.10.0 (2020-08-07)
+
+### Breaking changes
+
+Upgrade to 0.10 parser serialization
+
 ## 0.9.0 (2020-06-08)
 
 ### Breaking changes
