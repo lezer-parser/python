@@ -28,7 +28,7 @@ quotes"""
 
 ==>
 
-Script(ExpressionStatement(String, String),
+Script(ExpressionStatement(ContinuedString(String, String)),
        ExpressionStatement(String),
        ExpressionStatement(String),
        ExpressionStatement(String))

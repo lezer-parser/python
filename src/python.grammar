@@ -33,9 +33,12 @@ param { (kw<"self"> | VariableName) TypeDef? (AssignOp{"="} test)? | "*" Variabl
 
 TypeDef { ":" test }
 
-statement { simpleStatement | compoundStatement }
+statement[@isGroup=Statement] { simpleStatement | compoundStatement }
 
-simpleStatement { smallStatement (";" smallStatement?)* (newline | eof) }
+simpleStatement {
+  smallStatement (newline | eof) |
+  StatementGroup { smallStatement (";" smallStatement?)+ (newline | eof) }
+}
 
 smallStatement {
   AssignStatement { expressions TypeDef? (AssignOp{"="} (YieldExpression | expressions))+ } |
@@ -121,7 +124,7 @@ binaryTest[@name="BinaryExpression"] {
 
 unaryTest[@name="UnaryExpression"] { kw<"not"> testInner }
 
-expression {
+expression[@isGroup=Expression] {
   BinaryExpression |
   UnaryExpression { !prefix (ArithOp{"+" | "-"} | BitOp{"~"}) expression } |
   AwaitExpression { kw<"await"> expression } |
@@ -138,7 +141,8 @@ expression {
   MemberExpression { expression !trail ("[" commaSep<test | test? ":" test? (":" test?)?> "]" | "." PropertyName) } |
   VariableName |
   Number |
-  (String | FormatString)+ |
+  String | FormatString |
+  ContinuedString { (String | FormatString) (String | FormatString)+ } |
   "..." |
   kw<"None"> |
   kw<"self"> |

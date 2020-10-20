@@ -188,9 +188,10 @@ raise "oh"
 ==>
 
 Script(
-  ExpressionStatement(VariableName),
-  ExpressionStatement(CallExpression(VariableName, ArgList)),
-  AssignStatement(VariableName, AssignOp, Number),
+  StatementGroup(
+    ExpressionStatement(VariableName),
+    ExpressionStatement(CallExpression(VariableName, ArgList)),
+    AssignStatement(VariableName, AssignOp, Number)),
   RaiseStatement(raise, String))
 
 # Nested bodies
