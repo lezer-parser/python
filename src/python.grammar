@@ -64,7 +64,7 @@ importedNames { commaSep<VariableName | VariableName kw<"as"> VariableName> }
 
 commaSep<expr> { expr ("," expr?)* }
 
-@export compoundStatement {
+compoundStatement[@export] {
   IfStatement |
   WhileStatement { kw<"while"> testNamed Body elseClause? } |
   ForStatement { kw<"async">? kw<"for"> commaSep<"*"? expression> kw<"in"> commaSep<test> Body elseClause? } |
