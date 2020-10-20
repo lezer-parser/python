@@ -94,7 +94,7 @@ Body { ":" (simpleStatement | newline statement (continueBody statement)* (endBo
 
 lambdaParam { (kw<"self"> | VariableName) (AssignOp{"="} test)? | "*" VariableName? | "**" VariableName }
 
-lambdaParams[name="ParamList"] { (lambdaParam ("," lambdaParam)*)? }
+lambdaParams[@name="ParamList"] { (lambdaParam ("," lambdaParam)*)? }
 
 test {
  testInner |
@@ -113,13 +113,13 @@ testNamed {
 
 testInner { binaryTest | unaryTest | expression }
 
-binaryTest[name="BinaryExpression"] {
+binaryTest[@name="BinaryExpression"] {
   testInner !or kw<"or"> testInner |
   testInner !and kw<"and"> testInner |
   testInner !compare (CompareOp | kw<"in"> | kw<"not"> kw<"in"> | kw<"is"> kw<"not">?) testInner
 }
 
-unaryTest[name="UnaryExpression"] { kw<"not"> testInner }
+unaryTest[@name="UnaryExpression"] { kw<"not"> testInner }
 
 expression {
   BinaryExpression |
@@ -142,7 +142,7 @@ expression {
   "..." |
   kw<"None"> |
   kw<"self"> |
-  @specialize[name=Boolean]<identifier, "True" | "False">
+  @specialize[@name=Boolean]<identifier, "True" | "False">
 }
 
 yield { kw<"yield"> (kw<"from"> test | commaSep<test | "*" expression>) }
@@ -179,7 +179,7 @@ PropertyName { word }
 
 dottedName { VariableName ("." VariableName)* }
 
-kw<term> { @specialize[name={term}]<identifier, term> }
+kw<term> { @specialize[@name={term}]<identifier, term> }
 
 @skip {} {
   String {
@@ -200,7 +200,7 @@ kw<term> { @specialize[name={term}]<identifier, term> }
 
 FormatReplacement { "{" (YieldExpression | commaSep<"*"? test>) FormatConversion? (formatStringSpec | "}") }
 
-@external tokens legacyPrint from "./tokens.js" { printKeyword[name="print"] }
+@external tokens legacyPrint from "./tokens.js" { printKeyword[@name="print"] }
 
 @tokens {
   CompareOp { "<" | ">" | $[<>=!] "=" | "<>" }
@@ -268,7 +268,7 @@ FormatReplacement { "{" (YieldExpression | commaSep<"*"? test>) FormatConversion
 
   At { "@" }
 
-  "..."[name=Ellipsis]
+  "..."[@name=Ellipsis]
 
   "(" ")" "[" "]" "{" "}"
 
