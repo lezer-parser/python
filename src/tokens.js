@@ -86,7 +86,7 @@ export const newlines = new ExternalTokenizer((input, token, stack) => {
     return
   }
   if (next != newline && next != carriageReturn) return
-  if (stack.startOf(bracketed) > -1) {
+  if (stack.startOf(bracketed) != null) {
     token.accept(newlineBracketed, token.start + 1)
     return
   }
@@ -108,7 +108,7 @@ export const newlines = new ExternalTokenizer((input, token, stack) => {
 
 export const bodyContinue = new ExternalTokenizer((input, token, stack) => {
   let parent = stack.startOf(parentStatement)
-  let parentIndent = parent < 0 ? 0 : getIndent(input, parent)
+  let parentIndent = parent == null ? 0 : getIndent(input, parent)
   let indentHere = getIndent(input, token.start)
   token.accept(indentHere <= parentIndent ? endBody : continueBody, token.start)
 }, {contextual: true, fallback: true})
