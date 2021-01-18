@@ -21,6 +21,17 @@ def foo(a, b): return a + b
 Script(FunctionDefinition(def,VariableName,ParamList(VariableName, VariableName),
   Body(ReturnStatement(return, BinaryExpression(VariableName, ArithOp, VariableName)))))
 
+# Return with no body
+
+def foo(a, b):
+  a = b
+  return
+
+==>
+
+Script(FunctionDefinition(def,VariableName,ParamList(VariableName, VariableName),
+  Body(AssignStatement(VariableName, AssignOp, VariableName), ReturnStatement(return))))
+
 # Conditional
 
 if a: b()
@@ -233,7 +244,7 @@ if None:
   one
 
   two
-     
+
   four
 # comment
   five
