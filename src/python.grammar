@@ -48,7 +48,7 @@ smallStatement {
   PassStatement { kw<"pass"> } |
   BreakStatement { kw<"break"> } |
   ContinueStatement { kw<"continue"> } |
-  ReturnStatement { kw<"return"> commaSep<test | "*" expression> } |
+  ReturnStatement { kw<"return"> commaSep<test | "*" expression>? } |
   YieldStatement { yield } |
   PrintStatement { printKeyword test } |
   RaiseStatement { kw<"raise"> (test (kw<"from"> test | ("," test ("," test)?))?)? } |
