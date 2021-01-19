@@ -1,3 +1,9 @@
+## 0.13.2 (2021-01-19)
+
+### Bug fixes
+
+Add support for return statements without expressions.
+
 ## 0.13.1 (2020-12-04)
 
 ### Bug fixes
