@@ -287,3 +287,12 @@ Script(
   ExpressionStatement(CallExpression(VariableName, ArgList(MemberExpression(VariableName, PropertyName)))),
   TryStatement(try, Body(RaiseStatement(raise, VariableName, String)),
                except, VariableName, VariableName, Body(PassStatement(pass))))
+
+# Require indentation on body
+
+def foo():
+pass
+
+==>
+
+Script(FunctionDefinition(def,VariableName,ParamList,Body(⚠)), PassStatement(pass))

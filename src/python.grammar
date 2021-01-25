@@ -93,7 +93,7 @@ TryStatement {
   (kw<"finally"> Body)?
 }
 
-Body { ":" (simpleStatement | newline statement (continueBody statement)* (endBody | eof)) }
+Body { ":" (simpleStatement | newline continueBody statement (continueBody statement)* (endBody | eof)) }
 
 lambdaParam { (kw<"self"> | VariableName) (AssignOp{"="} test)? | "*" VariableName? | "**" VariableName }
 
