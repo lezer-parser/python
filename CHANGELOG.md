@@ -1,3 +1,9 @@
+## 0.13.3 (2021-01-25)
+
+### Bug fixes
+
+Fix an issue where non-indented lines after a colon were parsed as part of the body.
+
 ## 0.13.2 (2021-01-19)
 
 ### Bug fixes
