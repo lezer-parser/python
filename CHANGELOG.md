@@ -1,3 +1,9 @@
+## 0.13.4 (2021-01-27)
+
+### Bug fixes
+
+Fix a bug where keywords like `else` or `except` would be consumed even if they don't match the indentation of the parent statement.
+
 ## 0.13.3 (2021-01-25)
 
 ### Bug fixes
