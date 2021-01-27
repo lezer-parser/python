@@ -1,6 +1,7 @@
 import {ExternalTokenizer} from "lezer"
 import {
   newline as newlineToken, eof, newlineEmpty, newlineBracketed, continueBody, endBody,
+  _else, _elif, _except, _finally,
   ParenthesizedExpression, TupleExpression, ComprehensionExpression, ArrayExpression, ArrayComprehensionExpression,
   DictionaryExpression, DictionaryComprehensionExpression, SetExpression, SetComprehensionExpression,
   compoundStatement,
@@ -111,6 +112,20 @@ export const bodyContinue = new ExternalTokenizer((input, token, stack) => {
   let parentIndent = parent == null ? 0 : getIndent(input, parent)
   let indentHere = getIndent(input, token.start)
   token.accept(indentHere <= parentIndent ? endBody : continueBody, token.start)
+}, {contextual: true, fallback: true})
+
+let keywords = {else: _else, elif: _elif, except: _except, finally: _finally}
+
+// Matches else/elif/except/finally, but only when at same indentation
+// as their parent statement
+export const statementContinueKeyword = new ExternalTokenizer((input, token, stack) => {
+  let pos = token.start, next = input.get(token.start), m
+  if (next == 101 /* 'e' */ && (m = /^(?:else|elif|except)\b/.exec(input.read(pos, pos + 7))) ||
+      next == 102 /* 'f' */ && (m = /^finally\b/.exec(input.read(pos, pos + 8)))) {
+    let parent = stack.startOf(parentStatement)
+    let parentIndent = parent == null ? 0 : getIndent(input, parent)
+    if (getIndent(input, token.start) == parentIndent) token.accept(keywords[m[0]], pos + m[0].length)
+  }
 }, {contextual: true, fallback: true})
 
 export const legacyPrint = new ExternalTokenizer((input, token) => {

@@ -78,19 +78,19 @@ compoundStatement[@export] {
   DecoratedStatement { Decorator+ (ClassDefinition | FunctionDefinition) }
 }
 
-elseClause { kw<"else"> Body }
+elseClause { _else Body }
 
 IfStatement {
   kw<"if"> testNamed Body
-  (kw<"elif"> testNamed? Body)*
+  (_elif testNamed? Body)*
   elseClause?
 }
 
 TryStatement {
   kw<"try"> Body
-  (kw<"except"> (test ((kw<"as"> | ",") VariableName)?)? Body)*
+  (_except (test ((kw<"as"> | ",") VariableName)?)? Body)*
   elseClause?
-  (kw<"finally"> Body)?
+  (_finally Body)?
 }
 
 Body { ":" (simpleStatement | newline continueBody statement (continueBody statement)* (endBody | eof)) }
@@ -205,6 +205,13 @@ kw<term> { @specialize[@name={term}]<identifier, term> }
 FormatReplacement { "{" (YieldExpression | commaSep<"*"? test>) FormatConversion? (formatStringSpec | "}") }
 
 @external tokens legacyPrint from "./tokens.js" { printKeyword[@name="print"] }
+
+@external tokens statementContinueKeyword from "./tokens" {
+  _else[@name="else"],
+  _elif[@name="elif"],
+  _except[@name="except"],
+  _finally[@name="finally"]
+}
 
 @tokens {
   CompareOp { "<" | ">" | $[<>=!] "=" | "<>" }

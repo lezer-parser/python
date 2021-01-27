@@ -296,3 +296,17 @@ pass
 ==>
 
 Script(FunctionDefinition(def,VariableName,ParamList,Body(⚠)), PassStatement(pass))
+
+# Nested else
+
+if a:
+  if b:
+    pass
+else:
+  pass
+
+==>
+
+Script(IfStatement(if, VariableName, Body(
+  IfStatement(if, VariableName, Body(PassStatement(pass)))),
+  else, Body(PassStatement(pass))))
