@@ -242,28 +242,30 @@ FormatReplacement { "{" (YieldExpression | commaSep<"*"? test>) FormatConversion
 
   formatStringSpecChars { ![{}]+ }
 
-  formatString1Content { !['{\\] | "\\" _ | "{{" }
-  formatString2Content { !["{\\] | "\\" _ | "{{" }
+  formatString1Content { (!['{\\] | "\\" _ | "{{")+ }
+  formatString2Content { (!["{\\] | "\\" _ | "{{")+ }
 
   longStringStart<quote> { stringPrefix? quote quote quote }
 
-  longString1Content { !['\\] | "\\" _ | "'" longString1_2 }
+  longString1Content { (!['\\] | "\\" _ | "'" longString1_2)+ }
   longString1_2 { !['\\] | "\\" _ | "'" longString1_3 }
   longString1_3 { !['\\] | "\\" _ }
 
-  longString2Content { !["\\] | "\\" _ | '"' longString2_2 }
+  longString2Content { (!["\\] | "\\" _ | '"' longString2_2)+ }
   longString2_2 { !["\\] | "\\" _ | '"' longString2_3 }
   longString2_3 { !["\\] | "\\" _ }
 
   longFormatStringStart<quote> { formatPrefix quote quote quote }
 
-  longFormatString1Content { !['\\{] | "\\" _ | "'" longFormatString1_2 | "{{" }
+  longFormatString1Content { (!['\\{] | "\\" _ | "'" longFormatString1_2 | "{{")+ }
   longFormatString1_2 { !['\\{] | "\\" _ | "{{" | "'" longFormatString1_3 }
   longFormatString1_3 { !['\\{] | "\\" _ | "{{" }
 
-  longFormatString2Content { !["\\{] | "\\" _ | "'" longFormatString2_2 | "{{" }
+  longFormatString2Content { (!["\\{] | "\\" _ | "'" longFormatString2_2 | "{{")+ }
   longFormatString2_2 { !["\\{] | "\\" _ | "{{" | "'" longFormatString2_3 }
   longFormatString2_3 { !["\\{] | "\\" _ | "{{" }
+
+  @precedence { "{", formatString1Content, formatString2Content, longFormatString1Content, longFormatString2Content }
 
   Number {
     (std.digit ("_" | std.digit)* ("." std.digit ("_" | std.digit)*)? | "." std.digit ("_" | std.digit)*)
