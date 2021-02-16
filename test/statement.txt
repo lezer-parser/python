@@ -129,9 +129,9 @@ class Bar(Foo): pass
 Script(
   ClassDefinition(class, VariableName, Body(
     AssignStatement(VariableName, AssignOp, Number),
-    FunctionDefinition(def, VariableName, ParamList(self), Body(PassStatement(pass))),
-    FunctionDefinition(def, VariableName, ParamList(self), Body(
-      UpdateStatement(MemberExpression(self, PropertyName), UpdateOp, Number))))),
+    FunctionDefinition(def, VariableName, ParamList(VariableName), Body(PassStatement(pass))),
+    FunctionDefinition(def, VariableName, ParamList(VariableName), Body(
+      UpdateStatement(MemberExpression(VariableName, PropertyName), UpdateOp, Number))))),
   ClassDefinition(class, VariableName, ArgList(VariableName), Body(PassStatement(pass))))
 
 # Scope statements
@@ -310,3 +310,11 @@ else:
 Script(IfStatement(if, VariableName, Body(
   IfStatement(if, VariableName, Body(PassStatement(pass)))),
   else, Body(PassStatement(pass))))
+
+# Self not reserved
+
+self = True
+
+==>
+
+Script(AssignStatement(VariableName,AssignOp,Boolean))
