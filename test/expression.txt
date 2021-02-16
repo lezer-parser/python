@@ -163,12 +163,22 @@ Script(ExpressionStatement(AwaitExpression(await, CallExpression(VariableName, A
 x = [
   1, 2,
   # And
-  3, 4
+  3, 4,
 ]
 
 ==>
 
 Script(AssignStatement(VariableName, AssignOp, ArrayExpression(Number, Number, Comment, Number, Number)))
+
+# Too many commas in brackets
+
+x = [
+  1, 2,,
+]
+
+==>
+
+Script(AssignStatement(VariableName, AssignOp, ArrayExpression(Number, Number, ⚠)))
 
 # Conditional expression
 

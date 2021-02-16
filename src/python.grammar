@@ -65,7 +65,7 @@ ImportStatement {
 }
 importedNames { commaSep<VariableName | VariableName kw<"as"> VariableName> }
 
-commaSep<expr> { expr ("," expr?)* }
+commaSep<expr> { expr ("," expr)* ","? }
 
 compoundStatement[@export] {
   IfStatement |
