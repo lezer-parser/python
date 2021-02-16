@@ -1,7 +1,7 @@
 @precedence {
   cond,
   trail,
-  power @left,
+  power @right,
   prefix,
   times @left,
   plus @left,
