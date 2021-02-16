@@ -188,3 +188,12 @@ x = 5 if True else 1 if False else 0
 
 Script(AssignStatement(VariableName, AssignOp, ConditionalExpression(Number, if, Boolean, else,
   ConditionalExpression(Number, if, Boolean, else, Number))))
+
+# Exponent is R-to-L associative
+
+2 ** 3 ** 2
+
+==>
+Script(ExpressionStatement(BinaryExpression(
+  Number,ArithOp("**"),
+  BinaryExpression(Number,ArithOp("**"),Number))))
