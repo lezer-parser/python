@@ -29,7 +29,7 @@ FunctionDefinition {
 
 ClassDefinition { kw<"class"> VariableName ArgList? Body }
 
-param { (kw<"self"> | VariableName) TypeDef? (AssignOp{"="} test)? | "*" VariableName? | "**" VariableName | "/" }
+param { VariableName TypeDef? (AssignOp{"="} test)? | "*" VariableName? | "**" VariableName | "/" }
 
 TypeDef { ":" test }
 
@@ -95,7 +95,7 @@ TryStatement {
 
 Body { ":" (simpleStatement | newline continueBody statement (continueBody statement)* (endBody | eof)) }
 
-lambdaParam { (kw<"self"> | VariableName) (AssignOp{"="} test)? | "*" VariableName? | "**" VariableName }
+lambdaParam { VariableName (AssignOp{"="} test)? | "*" VariableName? | "**" VariableName }
 
 lambdaParams[@name="ParamList"] { (lambdaParam ("," lambdaParam)*)? }
 
@@ -145,7 +145,6 @@ expression[@isGroup=Expression] {
   ContinuedString { (String | FormatString) (String | FormatString)+ } |
   "..." |
   kw<"None"> |
-  kw<"self"> |
   @specialize[@name=Boolean]<identifier, "True" | "False">
 }
 
