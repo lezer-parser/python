@@ -96,7 +96,7 @@ export const newlines = new ExternalTokenizer((input, token, stack) => {
     let ch = input.get(scan)
     if (ch == space) indent++
     else if (ch == tab) indent += 8 - (indent % 8)
-    else if (ch == newline || indent == carriageReturn || ch == hash) {
+    else if (ch == newline || ch == carriageReturn || ch == hash) {
       token.accept(newlineEmpty, token.start + 1)
       return
     } else {

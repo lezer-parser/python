@@ -1,3 +1,9 @@
+## 0.13.5 (2021-02-11)
+
+### Bug fixes
+
+Fixes an inefficiency in the parsing of large strings.
+
 ## 0.13.4 (2021-01-27)
 
 ### Bug fixes

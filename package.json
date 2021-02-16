@@ -1,6 +1,6 @@
 {
   "name": "lezer-python",
-  "version": "0.13.4",
+  "version": "0.13.5",
   "description": "Lezer-based Python grammar",
   "main": "dist/index.cjs",
   "type": "module",
