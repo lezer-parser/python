@@ -1,3 +1,9 @@
+## 0.13.6 (2021-02-17)
+
+### Bug fixes
+
+Fix a bug where incremental parses could get confused about block nesting.
+
 ## 0.13.5 (2021-02-11)
 
 ### Bug fixes
