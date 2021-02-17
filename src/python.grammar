@@ -67,7 +67,7 @@ importedNames { commaSep<VariableName | VariableName kw<"as"> VariableName> }
 
 commaSep<expr> { expr ("," expr)* ","? }
 
-compoundStatement[@export] {
+compoundStatement {
   IfStatement |
   WhileStatement { kw<"while"> testNamed Body elseClause? } |
   ForStatement { kw<"async">? kw<"for"> commaSep<"*"? expression> kw<"in"> commaSep<test> Body elseClause? } |
@@ -78,22 +78,22 @@ compoundStatement[@export] {
   DecoratedStatement { Decorator+ (ClassDefinition | FunctionDefinition) }
 }
 
-elseClause { _else Body }
+elseClause { kw<"else"> Body }
 
 IfStatement {
   kw<"if"> testNamed Body
-  (_elif testNamed? Body)*
+  (kw<"elif"> testNamed? Body)*
   elseClause?
 }
 
 TryStatement {
   kw<"try"> Body
-  (_except (test ((kw<"as"> | ",") VariableName)?)? Body)*
+  (kw<"except"> (test ((kw<"as"> | ",") VariableName)?)? Body)*
   elseClause?
-  (_finally Body)?
+  (kw<"finally"> Body)?
 }
 
-Body { ":" (simpleStatement | newline continueBody statement (continueBody statement)* (endBody | eof)) }
+Body { ":" (simpleStatement | newline indent statement+ (dedent | eof)) }
 
 lambdaParam { VariableName (AssignOp{"="} test)? | "*" VariableName? | "**" VariableName }
 
@@ -203,14 +203,11 @@ kw<term> { @specialize[@name={term}]<identifier, term> }
 
 FormatReplacement { "{" (YieldExpression | commaSep<"*"? test>) FormatConversion? (formatStringSpec | "}") }
 
+@context trackIndent from "./tokens.js"
+
 @external tokens legacyPrint from "./tokens.js" { printKeyword[@name="print"] }
 
-@external tokens statementContinueKeyword from "./tokens" {
-  _else[@name="else"],
-  _elif[@name="elif"],
-  _except[@name="except"],
-  _finally[@name="finally"]
-}
+@external tokens indentation from "./tokens" { indent, dedent }
 
 @tokens {
   CompareOp { "<" | ">" | $[<>=!] "=" | "<>" }
@@ -289,5 +286,3 @@ FormatReplacement { "{" (YieldExpression | commaSep<"*"? test>) FormatConversion
 }
 
 @external tokens newlines from "./tokens" { newline, newlineBracketed, newlineEmpty, eof }
-
-@external tokens bodyContinue from "./tokens" { continueBody, endBody }
