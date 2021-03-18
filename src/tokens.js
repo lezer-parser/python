@@ -55,7 +55,7 @@ export const indentation = new ExternalTokenizer((input, token, stack) => {
 function IndentLevel(parent, depth) {
   this.parent = parent
   this.depth = depth
-  this.hash = (parent ? parent.hash + parent.hash << 8 : 0) + depth + (depth << 4)
+  this.hash = depth + (parent ? parent.hash << 8 : 0)
 }
 
 const topIndent = new IndentLevel(null, 0)
