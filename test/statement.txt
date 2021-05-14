@@ -318,15 +318,3 @@ self = True
 ==>
 
 Script(AssignStatement(VariableName,AssignOp,Boolean))
-
-# Notices when the first line is indented
-
-# comment
-  def foo():
-    pass
-  def bar():
-    pass
-
-==>
-
-Script(Comment,⚠,FunctionDefinition(def,VariableName,ParamList("(",")"),Body(":",PassStatement(pass))))
