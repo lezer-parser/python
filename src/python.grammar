@@ -128,15 +128,15 @@ expression[@isGroup=Expression] {
   BinaryExpression |
   UnaryExpression { !prefix (ArithOp{"+" | "-"} | BitOp{"~"}) expression } |
   AwaitExpression { kw<"await"> expression } |
-  ParenthesizedExpression { "(" (testNamed | "*" expression | YieldExpression) ")" } |
-  TupleExpression { "(" (testNamed | "*" expression) (("," (testNamed | "*" expression))+ ","? | ",") ")" } |
-  ComprehensionExpression { "(" (testNamed | "*" expression) compFor ")" } |
-  ArrayExpression { "[" commaSep<testNamed | "*" expression>? "]" } |
-  ArrayComprehensionExpression { "[" (testNamed | "*" expression) compFor "]" } |
-  DictionaryExpression { "{" commaSep<test ":" test | "**" expression>? "}" } |
-  DictionaryComprehensionExpression { "{" (test ":" test | "**" expression) compFor "}" } |
-  SetExpression { "{" commaSep<test | "*" expression> "}" } |
-  SetComprehensionExpression { "{" (test | "*" expression) compFor "}" } |
+  ParenthesizedExpression |
+  TupleExpression |
+  ComprehensionExpression |
+  ArrayExpression |
+  ArrayComprehensionExpression |
+  DictionaryExpression |
+  DictionaryComprehensionExpression |
+  SetExpression |
+  SetComprehensionExpression |
   CallExpression { expression !trail ArgList } |
   MemberExpression { expression !trail ("[" commaSep<test | test? ":" test? (":" test?)?> "]" | "." PropertyName) } |
   VariableName |
@@ -147,6 +147,20 @@ expression[@isGroup=Expression] {
   kw<"None"> |
   @specialize[@name=Boolean]<identifier, "True" | "False">
 }
+
+ParenthesizedExpression { "(" (testNamed | "*" expression | YieldExpression) ")" }
+
+TupleExpression { "(" (testNamed | "*" expression) (("," (testNamed | "*" expression))+ ","? | ",") ")" }
+ComprehensionExpression { "(" (testNamed | "*" expression) compFor ")" }
+
+ArrayExpression { "[" commaSep<testNamed | "*" expression>? "]" }
+ArrayComprehensionExpression { "[" (testNamed | "*" expression) compFor "]" }
+
+DictionaryExpression { "{" commaSep<test ":" test | "**" expression>? "}" }
+DictionaryComprehensionExpression { "{" (test ":" test | "**" expression) compFor "}" }
+
+SetExpression { "{" commaSep<test | "*" expression> "}" }
+SetComprehensionExpression { "{" (test | "*" expression) compFor "}" }
 
 yield { kw<"yield"> (kw<"from"> test | commaSep<test | "*" expression>) }
 
