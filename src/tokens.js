@@ -13,44 +13,38 @@ const bracketed = [
   DictionaryExpression, DictionaryComprehensionExpression, SetExpression, SetComprehensionExpression, ArgList, ParamList
 ]
 
-let cachedIndent = 0, cachedInput = null, cachedPos = 0
-function getIndent(input, pos) {
-  if (pos == cachedPos && input == cachedInput) return cachedIndent
-  cachedInput = input; cachedPos = pos
-  return cachedIndent = getIndentInner(input, pos)
-}
-
-function getIndentInner(input, pos) {
-  for (let indent = 0;; pos++) {
-    let ch = input.get(pos)
-    if (ch == space) indent++
-    else if (ch == tab) indent += 8 - (indent % 8)
-    else if (ch == newline || ch == carriageReturn || ch == hash) return -1
-    else return indent
-  }
-}
-
-export const newlines = new ExternalTokenizer((input, token, stack) => {
-  let next = input.get(token.start)
-  if (next < 0) {
-    token.accept(eof, token.start)
-  } else if (next != newline && next != carriageReturn) {
+export const newlines = new ExternalTokenizer((input, stack) => {
+  if (input.next < 0) {
+    input.acceptToken(eof)
+  } else if (input.next != newline && input.next != carriageReturn) {
   } else if (stack.startOf(bracketed) != null) {
-    token.accept(newlineBracketed, token.start + 1)
-  } else if (getIndent(input, token.start + 1) < 0) {
-    token.accept(newlineEmpty, token.start + 1)
+    input.acceptToken(newlineBracketed, 1)
   } else {
-    token.accept(newlineToken, token.start + 1)
+    input.advance()
+    let space = 0
+    while (input.next == space || input.next == tab) { input.advance(); space++ }
+    let empty = input.next == newline || input.next == carriageReturn || input.next == hash
+    input.acceptToken(empty ? newlineEmpty : newlineToken, -space)
   }
 }, {contextual: true, fallback: true})
 
-export const indentation = new ExternalTokenizer((input, token, stack) => {
-  let prev = input.get(token.start - 1), depth
-  if ((prev == newline || prev == carriageReturn) &&
-      (depth = getIndent(input, token.start)) >= 0 &&
-      depth != stack.context.depth &&
-      stack.startOf(bracketed) == null)
-    token.accept(depth < stack.context.depth ? dedent : indent, token.start)
+export const indentation = new ExternalTokenizer((input, stack) => {
+  let prev = input.peek(-1), depth
+  if ((prev == newline || prev == carriageReturn) && stack.startOf(bracketed) == null) {
+    let depth = 0, chars = 0
+    for (;;) {
+      if (input.next == space) depth++
+      else if (input.next == tab) depth += 8 - (depth % 8)
+      else break
+      input.advance()
+      chars++
+    }
+    if (depth != stack.context.depth &&
+        input.next != newline && input.next != carriageReturn && input.next != hash) {
+      if (depth < stack.context.depth) input.acceptToken(dedent, -chars)
+      else input.acceptToken(indent)
+    }
+  }
 })
 
 function IndentLevel(parent, depth) {
@@ -63,24 +57,23 @@ const topIndent = new IndentLevel(null, 0)
 
 export const trackIndent = new ContextTracker({
   start: topIndent,
-  shift(context, term, input, stack) {
-    return term == indent ? new IndentLevel(context, getIndent(input, stack.pos)) :
-      term == dedent ? context.parent : context
+  shift(context, term, stack, input) {
+    return term == indent ? new IndentLevel(context, stack.pos - input.pos) : term == dedent ? context.parent : context
   },
   hash(context) { return context.hash }
 })
 
-export const legacyPrint = new ExternalTokenizer((input, token) => {
-  let pos = token.start
-  for (let print = "print", i = 0; i < print.length; i++, pos++)
-    if (input.get(pos) != print.charCodeAt(i)) return
-  let end = pos
-  if (/\w/.test(String.fromCharCode(input.get(pos)))) return
-  for (;; pos++) {
-    let next = input.get(pos)
+export const legacyPrint = new ExternalTokenizer(input => {
+  for (let i = 0; i < 5; i++) {
+    if (input.next != "print".charCodeAt(i)) return
+    input.advance()
+  }
+  if (/\w/.test(String.fromCharCode(input.next))) return
+  for (let off = 0;; off++) {
+    let next = input.peek(off)
     if (next == space || next == tab) continue
     if (next != parenOpen && next != dot && next != newline && next != carriageReturn && next != hash)
-      token.accept(printKeyword, end)
+      input.acceptToken(printKeyword)
     return
   }
 })
