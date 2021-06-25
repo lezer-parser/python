@@ -1,4 +1,4 @@
-import {ExternalTokenizer, ContextTracker} from "lezer"
+import {ExternalTokenizer, ContextTracker} from "@lezer/lr"
 import {
   newline as newlineToken, eof, newlineEmpty, newlineBracketed, indent, dedent, printKeyword,
   ParenthesizedExpression, TupleExpression, ComprehensionExpression,

@@ -1,5 +1,5 @@
 {
-  "name": "lezer-python",
+  "name": "@lezer/python",
   "version": "0.13.7",
   "description": "Lezer-based Python grammar",
   "main": "dist/index.cjs",
@@ -13,13 +13,13 @@
   "author": "Marijn Haverbeke <marijnh@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "lezer-generator": "^0.13.3",
-    "mocha": "^8.1.3",
-    "rollup": "^2.27.1",
+    "@lezer/generator": "^0.13.3",
+    "mocha": "^9.0.1",
+    "rollup": "^2.52.2",
     "@rollup/plugin-node-resolve": "^9.0.0"
   },
   "dependencies": {
-    "lezer": "^0.13.2"
+    "@lezer/lr": "^0.13.2"
   },
   "repository": {
     "type" : "git",

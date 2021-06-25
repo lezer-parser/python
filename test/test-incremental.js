@@ -1,6 +1,6 @@
 import {parser} from "../dist/index.es.js"
-import {fileTests} from "lezer-generator/dist/test"
-import {Tree, TreeFragment} from "lezer-tree"
+import {fileTests} from "@lezer/generator/dist/test"
+import {Tree, TreeFragment} from "@lezer/common"
 
 describe("Incremental parsing", () => {
   // See https://github.com/codemirror/codemirror.next/issues/394
