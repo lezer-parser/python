@@ -1,7 +1,8 @@
 import {ExternalTokenizer, ContextTracker} from "lezer"
 import {
   newline as newlineToken, eof, newlineEmpty, newlineBracketed, indent, dedent, printKeyword,
-  ParenthesizedExpression, TupleExpression, ComprehensionExpression, ArrayExpression, ArrayComprehensionExpression,
+  ParenthesizedExpression, TupleExpression, ComprehensionExpression,
+  ArrayExpression, ArrayComprehensionExpression, ArgList, ParamList,
   DictionaryExpression, DictionaryComprehensionExpression, SetExpression, SetComprehensionExpression
 } from "./parser.terms.js"
 
@@ -9,7 +10,7 @@ const newline = 10, carriageReturn = 13, space = 32, tab = 9, hash = 35, parenOp
 
 const bracketed = [
   ParenthesizedExpression, TupleExpression, ComprehensionExpression, ArrayExpression, ArrayComprehensionExpression,
-  DictionaryExpression, DictionaryComprehensionExpression, SetExpression, SetComprehensionExpression
+  DictionaryExpression, DictionaryComprehensionExpression, SetExpression, SetComprehensionExpression, ArgList, ParamList
 ]
 
 let cachedIndent = 0, cachedInput = null, cachedPos = 0

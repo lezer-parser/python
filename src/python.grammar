@@ -22,10 +22,12 @@ Decorator { At dottedName ArgList? newline }
 
 FunctionDefinition {
   kw<"async">? kw<"def"> VariableName
-  ParamList { "(" commaSep<param>? ")" }
+  ParamList
   TypeDef { "->" test }?
   Body
 }
+
+ParamList { "(" commaSep<param>? ")" }
 
 ClassDefinition { kw<"class"> VariableName ArgList? Body }
 

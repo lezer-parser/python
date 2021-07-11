@@ -33,6 +33,16 @@ Script(ExpressionStatement(ContinuedString(String, String)),
        ExpressionStatement(String),
        ExpressionStatement(String))
 
+# Bracketed continued string
+
+print('00300:'
+      '03630:')
+
+==>
+
+Script(ExpressionStatement(CallExpression(VariableName, ArgList(ContinuedString(String, String)))))
+
+
 # Format strings
 
 f'hello{22} abc {{ }} {d-1}'
