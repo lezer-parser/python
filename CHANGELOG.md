@@ -1,3 +1,9 @@
+## 0.13.7 (2021-07-12)
+
+### Bug fixes
+
+Fix a bug that caused newlines to be disallowed in argument and parameter lists.
+
 ## 0.13.6 (2021-02-17)
 
 ### Bug fixes
