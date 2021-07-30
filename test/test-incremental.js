@@ -16,11 +16,11 @@ def b(self):
     """ ${"big block comment to fill up the reuse size quota\n  ".repeat(150)} """
     pass
 `
-    let ast = parser.parse({input})
+    let ast = parser.parse(input)
     let at = input.indexOf("pass")
     input = input.slice(0, at) + " " + input.slice(at)
     let cache = TreeFragment.applyChanges(TreeFragment.addTree(ast), [{fromA: at, toA: at, fromB: at, toB: at + 1}])
-    let ast2 = parser.parse({input, fragments: cache})
+    let ast2 = parser.parse(input, cache)
     if (ast2.toString() != ast.toString()) throw new Error("Malformed tree")
 
     let lastFunc = ast => {
