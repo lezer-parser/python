@@ -63,9 +63,10 @@ expressions { commaSep<"*" expression | test> }
 
 ImportStatement {
   kw<"import"> dottedName (kw<"as"> VariableName)? |
-  kw<"from"> (("." | "...")+ dottedName? | dottedName) kw<"import"> ("*" | "(" importedNames ")" | importedNames)
+  kw<"from"> (("." | "...")+ dottedName? | dottedName) kw<"import"> ("*" | importList | importedNames)
 }
 importedNames { commaSep<VariableName | VariableName kw<"as"> VariableName> }
+importList[@export] { "(" importedNames ")" }
 
 commaSep<expr> { expr ("," expr)* ","? }
 
@@ -140,7 +141,7 @@ expression[@isGroup=Expression] {
   SetExpression |
   SetComprehensionExpression |
   CallExpression { expression !trail ArgList } |
-  MemberExpression { expression !trail ("[" commaSep<test | test? ":" test? (":" test?)?> "]" | "." PropertyName) } |
+  MemberExpression { expression !trail (subscript | "." PropertyName) } |
   VariableName |
   Number |
   String | FormatString |
@@ -148,6 +149,10 @@ expression[@isGroup=Expression] {
   "..." |
   kw<"None"> |
   @specialize[@name=Boolean]<identifier, "True" | "False">
+}
+
+subscript[@export] {
+  "[" commaSep<test | test? ":" test? (":" test?)?> "]"
 }
 
 ParenthesizedExpression { "(" (testNamed | "*" expression | YieldExpression) ")" }
@@ -295,7 +300,9 @@ FormatReplacement { "{" (YieldExpression | commaSep<"*"? test>) FormatConversion
 
   "..."[@name=Ellipsis]
 
-  "(" ")" "[" "]" "{" "}"
+  "("[@export=ParenL] ")"
+  "["[@export=BracketL] "]"
+  "{"[@export=BraceL] "}"
 
   "." "," ";" ":" "@" "*" "**"
 
