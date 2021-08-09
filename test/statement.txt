@@ -318,3 +318,14 @@ self = True
 ==>
 
 Script(AssignStatement(VariableName,AssignOp,Boolean))
+
+# Trailing whitespace in block
+
+def x():
+  one
+  
+  two
+
+==>
+
+Script(FunctionDefinition(def,VariableName,ParamList,Body(ExpressionStatement(VariableName),ExpressionStatement(VariableName))))

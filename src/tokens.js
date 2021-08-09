@@ -24,10 +24,10 @@ export const newlines = new ExternalTokenizer((input, stack) => {
     input.acceptToken(newlineBracketed, 1)
   } else {
     input.advance()
-    let space = 0
-    while (input.next == space || input.next == tab) { input.advance(); space++ }
+    let spaces = 0
+    while (input.next == space || input.next == tab) { input.advance(); spaces++ }
     let empty = input.next == newline || input.next == carriageReturn || input.next == hash
-    input.acceptToken(empty ? newlineEmpty : newlineToken, -space)
+    input.acceptToken(empty ? newlineEmpty : newlineToken, -spaces)
   }
 }, {contextual: true, fallback: true})
 
