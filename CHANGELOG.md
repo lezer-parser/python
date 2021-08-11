@@ -1,3 +1,11 @@
+## 0.15.0 (2021-08-11)
+
+### Breaking changes
+
+The module's name changed from `lezer-python` to `@lezer/python`.
+
+Upgrade to the 0.15.0 lezer interfaces.
+
 ## 0.13.7 (2021-07-12)
 
 ### Bug fixes
