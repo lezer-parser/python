@@ -1,3 +1,9 @@
+## 0.15.1 (2022-03-16)
+
+### Bug fixes
+
+Fix a bug where indentation with tabs was tracked incorrectly, leading to spurious indent tokens and malformed trees.
+
 ## 0.15.0 (2021-08-11)
 
 ### Breaking changes
