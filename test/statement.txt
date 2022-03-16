@@ -329,3 +329,22 @@ def x():
 ==>
 
 Script(FunctionDefinition(def,VariableName,ParamList,Body(ExpressionStatement(VariableName),ExpressionStatement(VariableName))))
+
+# Can handle tab indentation
+
+class Employee:
+	first_name: str
+        last_name: str
+
+	def __init__(self, a):
+		self.first_name = a
+	  	self.last_name = a
+
+==>
+
+Script(ClassDefinition(class,VariableName,Body(
+  AssignStatement(VariableName,TypeDef(VariableName)),
+  AssignStatement(VariableName,TypeDef(VariableName)),
+  FunctionDefinition(def,VariableName,ParamList(VariableName,VariableName),Body(
+    AssignStatement(MemberExpression(VariableName,PropertyName),AssignOp,VariableName),
+    AssignStatement(MemberExpression(VariableName,PropertyName),AssignOp,VariableName))))))

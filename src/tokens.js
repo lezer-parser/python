@@ -61,13 +61,20 @@ function IndentLevel(parent, depth) {
 
 const topIndent = new IndentLevel(null, 0)
 
+function countIndent(space) {
+  let depth = 0
+  for (let i = 0; i < space.length; i++)
+    depth += space.charCodeAt(i) == tab ? 8 - (depth % 8) : 1
+  return depth
+}
+
 export const trackIndent = new ContextTracker({
   start: topIndent,
   reduce(context, term) {
     return context.depth < 0 && bracketed.indexOf(term) > -1 ? context.parent : context
   },
   shift(context, term, stack, input) {
-    if (term == indent) return new IndentLevel(context, stack.pos - input.pos)
+    if (term == indent) return new IndentLevel(context, countIndent(input.read(input.pos, stack.pos)))
     if (term == dedent) return context.parent
     if (term == ParenL || term == BracketL || term == BraceL) return new IndentLevel(context, -1)
     return context
