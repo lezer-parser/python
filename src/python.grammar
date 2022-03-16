@@ -43,7 +43,7 @@ simpleStatement {
 }
 
 smallStatement {
-  AssignStatement { expressions TypeDef? (AssignOp{"="} (YieldExpression | expressions))+ } |
+  AssignStatement { expressions (TypeDef? (AssignOp{"="} (YieldExpression | expressions))+ | TypeDef) } |
   UpdateStatement { expressions UpdateOp (YieldExpression | commaSep<test>) } |
   ExpressionStatement { expressions } |
   DeleteStatement { kw<"del"> commaSep<expression> } |
