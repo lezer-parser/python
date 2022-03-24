@@ -309,3 +309,7 @@ FormatReplacement { "{" (YieldExpression | commaSep<"*"? test>) FormatConversion
 }
 
 @external tokens newlines from "./tokens" { newline, newlineBracketed, newlineEmpty, eof }
+
+@external propSource pythonHighlighting from "./highlight"
+
+@detectDelim
