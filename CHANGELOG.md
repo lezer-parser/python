@@ -1,3 +1,13 @@
+## 0.16.0 (2022-04-20)
+
+### Breaking changes
+
+Move to 0.16 serialized parser format.
+
+### New features
+
+The parser now includes syntax highlighting information in its node types.
+
 ## 0.15.1 (2022-03-16)
 
 ### Bug fixes
