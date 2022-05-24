@@ -278,8 +278,8 @@ FormatReplacement { "{" (YieldExpression | commaSep<"*"? test>) FormatConversion
   longFormatString1_2 { !['\\{] | "\\" _ | "{{" | "'" longFormatString1_3 }
   longFormatString1_3 { !['\\{] | "\\" _ | "{{" }
 
-  longFormatString2Content { (!["\\{] | "\\" _ | "'" longFormatString2_2 | "{{")+ }
-  longFormatString2_2 { !["\\{] | "\\" _ | "{{" | "'" longFormatString2_3 }
+  longFormatString2Content { (!["\\{] | "\\" _ | '"' longFormatString2_2 | "{{")+ }
+  longFormatString2_2 { !["\\{] | "\\" _ | "{{" | '"' longFormatString2_3 }
   longFormatString2_3 { !["\\{] | "\\" _ | "{{" }
 
   @precedence { "{", formatString1Content, formatString2Content, longFormatString1Content, longFormatString2Content }
