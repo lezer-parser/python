@@ -1,3 +1,9 @@
+## 0.16.1 (2022-05-24)
+
+### Bug fixes
+
+Fix a bug that caused `f"""` strings to be terminated at the first double quote in their content.
+
 ## 0.16.0 (2022-04-20)
 
 ### Breaking changes
