@@ -241,9 +241,9 @@ FormatReplacement { "{" (YieldExpression | commaSep<"*"? test>) FormatConversion
     identifier
   }
 
-  identifierChar { std.asciiLetter | $[_\u{a1}-\u{10ffff}] }
+  identifierChar { @asciiLetter | $[_\u{a1}-\u{10ffff}] }
 
-  word { identifierChar (std.digit | identifierChar)* }
+  word { identifierChar (@digit | identifierChar)* }
 
   identifier { word }
 
@@ -285,8 +285,8 @@ FormatReplacement { "{" (YieldExpression | commaSep<"*"? test>) FormatConversion
   @precedence { "{", formatString1Content, formatString2Content, longFormatString1Content, longFormatString2Content }
 
   Number {
-    (std.digit ("_" | std.digit)* ("." std.digit ("_" | std.digit)*)? | "." std.digit ("_" | std.digit)*)
-      ($[eE] $[+\-]? std.digit ("_" | std.digit)*)? $[jJ]? |
+    (@digit ("_" | @digit)* ("." @digit ("_" | @digit)*)? | "." @digit ("_" | @digit)*)
+      ($[eE] $[+\-]? @digit ("_" | @digit)*)? $[jJ]? |
     "0" $[bB] $[_01]+ |
     "0" $[oO] $[_0-7]+ |
     "0" $[xX] $[_0-9a-fA-F]+
