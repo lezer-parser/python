@@ -1,3 +1,9 @@
+## 1.1.0 (2022-07-27)
+
+### New features
+
+Parse Python 3.10 match statements (PEP 634).
+
 ## 1.0.0 (2022-06-06)
 
 ### New features
