@@ -348,3 +348,38 @@ Script(ClassDefinition(class,VariableName,Body(
   FunctionDefinition(def,VariableName,ParamList(VariableName,VariableName),Body(
     AssignStatement(MemberExpression(VariableName,PropertyName),AssignOp,VariableName),
     AssignStatement(MemberExpression(VariableName,PropertyName),AssignOp,VariableName))))))
+
+# Parses match statements
+
+match foo:
+  case 1:
+    pass
+  case Point("a", True) as z | a.b | {x: None, **y}:
+    pass
+  case [a, b, *rest] | (p, q):
+    pass
+
+==>
+
+Script(MatchStatement(match,VariableName,MatchBody(
+  MatchClause(case,
+    LiteralPattern(Number),
+    Body(PassStatement(pass))),
+  MatchClause(case,
+    OrPattern(
+      AsPattern(
+        ClassPattern(VariableName,PatternArgList(LiteralPattern(String),LiteralPattern(Boolean))),
+        as,VariableName),
+      LogicOp,
+      AttributePattern(VariableName,PropertyName),
+      LogicOp,
+      MappingPattern(VariableName,LiteralPattern(None),CapturePattern(VariableName))),
+    Body(PassStatement(pass))),
+  MatchClause(case,
+      OrPattern(SequencePattern(
+        CapturePattern(VariableName),
+        CapturePattern(VariableName),
+        StarPattern(CapturePattern(VariableName))),
+      LogicOp,
+      SequencePattern(CapturePattern(VariableName),CapturePattern(VariableName))),
+    Body(PassStatement(pass))))))

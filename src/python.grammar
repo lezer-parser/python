@@ -10,6 +10,7 @@
   xor @left,
   bitor @left,
   compare @left,
+  as @left,
   and @left,
   or @left
 }
@@ -28,6 +29,41 @@ FunctionDefinition {
 }
 
 ParamList { "(" commaSep<param>? ")" }
+
+MatchStatement {
+  skw<"match"> "*"? expression MatchBody { ":" newline indent MatchClause+ (dedent | eof) }
+}
+
+MatchClause {
+  skw<"case"> commaSep<pattern> Guard { kw<"if"> expression }? Body
+}
+
+pattern[@isGroup=Pattern] {
+  CapturePattern { VariableName } |
+  LiteralPattern |
+  AsPattern { pattern !as kw<"as"> VariableName } |
+  OrPattern { pattern (!or LogicOp{"|"} pattern)+ } |
+  AttributePattern |
+  SequencePattern |
+  MappingPattern |
+  StarPattern { "*" !prefix pattern } |
+  ClassPattern { (VariableName | AttributePattern) PatternArgList }
+}
+
+AttributePattern { VariableName ("." PropertyName)+ }
+
+LiteralPattern {
+  ArithOp{"-"}? Number (ArithOp{"+"|"-"} Number)? |
+  String |
+  kw<"None"> |
+  @specialize[@name=Boolean]<identifier, "True" | "False">
+}
+
+PatternArgList { "(" commaSep<pattern | KeywordPattern { VariableName "=" pattern }> ")" }
+
+SequencePattern { "[" commaSep<pattern> "]" | "(" commaSep<pattern> ")" }
+
+MappingPattern { "{" commaSep<"**" pattern | (VariableName | LiteralPattern) ":" pattern> "}" }
 
 ClassDefinition { kw<"class"> VariableName ArgList? Body }
 
@@ -78,7 +114,8 @@ compoundStatement {
   WithStatement { kw<"async">? kw<"with"> commaSep<test (kw<"as"> VariableName)?> Body } |
   FunctionDefinition |
   ClassDefinition |
-  DecoratedStatement { Decorator+ (ClassDefinition | FunctionDefinition) }
+  DecoratedStatement { Decorator+ (ClassDefinition | FunctionDefinition) } |
+  MatchStatement
 }
 
 elseClause { kw<"else"> Body }
@@ -204,6 +241,8 @@ PropertyName { word }
 dottedName { VariableName ("." VariableName)* }
 
 kw<term> { @specialize[@name={term}]<identifier, term> }
+
+skw<term> { @extend[@name={term}]<identifier, term> }
 
 @skip {} {
   String {

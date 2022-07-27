@@ -2,6 +2,7 @@ import {ExternalTokenizer, ContextTracker} from "@lezer/lr"
 import {
   newline as newlineToken, eof, newlineEmpty, newlineBracketed, indent, dedent, printKeyword,
   ParenthesizedExpression, TupleExpression, ComprehensionExpression,
+  PatternArgList, SequencePattern, MappingPattern,
   ArrayExpression, ArrayComprehensionExpression, ArgList, ParamList, importList, subscript,
   DictionaryExpression, DictionaryComprehensionExpression, SetExpression, SetComprehensionExpression, FormatReplacement,
   ParenL, BraceL, BracketL
@@ -9,12 +10,13 @@ import {
 
 const newline = 10, carriageReturn = 13, space = 32, tab = 9, hash = 35, parenOpen = 40, dot = 46
 
-const bracketed = [
+const bracketed = new Set([
   ParenthesizedExpression, TupleExpression, ComprehensionExpression, importList, ArgList, ParamList,
   ArrayExpression, ArrayComprehensionExpression, subscript,
   SetExpression, SetComprehensionExpression,
-  DictionaryExpression, DictionaryComprehensionExpression, FormatReplacement
-]
+  DictionaryExpression, DictionaryComprehensionExpression, FormatReplacement,
+  SequencePattern, MappingPattern, PatternArgList
+])
 
 export const newlines = new ExternalTokenizer((input, stack) => {
   if (input.next < 0) {
@@ -71,7 +73,7 @@ function countIndent(space) {
 export const trackIndent = new ContextTracker({
   start: topIndent,
   reduce(context, term) {
-    return context.depth < 0 && bracketed.indexOf(term) > -1 ? context.parent : context
+    return context.depth < 0 && bracketed.has(term) ? context.parent : context
   },
   shift(context, term, stack, input) {
     if (term == indent) return new IndentLevel(context, countIndent(input.read(input.pos, stack.pos)))
