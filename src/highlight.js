@@ -2,7 +2,7 @@ import {styleTags, tags as t} from "@lezer/highlight"
 
 export const pythonHighlighting = styleTags({
   "async \"*\" \"**\" FormatConversion FormatSpec": t.modifier,
-  "for while if elif else try except finally return raise break continue with pass assert await yield": t.controlKeyword,
+  "for while if elif else try except finally return raise break continue with pass assert await yield match case": t.controlKeyword,
   "in not and or is del": t.operatorKeyword,
   "from def class global nonlocal lambda": t.definitionKeyword,
   import: t.moduleKeyword,
