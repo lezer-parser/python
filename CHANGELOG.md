@@ -1,3 +1,9 @@
+## 1.1.1 (2022-10-31)
+
+### Bug fixes
+
+Add missing highlighting info for `match` and `case` keywords.
+
 ## 1.1.0 (2022-07-27)
 
 ### New features
