@@ -84,7 +84,7 @@ export const trackIndent = new ContextTracker({
   hash(context) { return context.hash }
 })
 
-export const legacyPrint = new ExternalTokenizer(input => {
+export const print = new ExternalTokenizer(input => {
   for (let i = 0; i < 5; i++) {
     if (input.next != "print".charCodeAt(i)) return
     input.advance()
@@ -93,7 +93,7 @@ export const legacyPrint = new ExternalTokenizer(input => {
   for (let off = 0;; off++) {
     let next = input.peek(off)
     if (next == space || next == tab) continue
-    if (next != parenOpen && next != dot && next != newline && next != carriageReturn && next != hash)
+    if (next != dot && next != newline && next != carriageReturn && next != hash)
       input.acceptToken(printKeyword)
     return
   }

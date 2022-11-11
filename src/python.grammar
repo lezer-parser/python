@@ -265,7 +265,7 @@ FormatReplacement { "{" (YieldExpression | commaSep<"*"? test>) FormatConversion
 
 @context trackIndent from "./tokens.js"
 
-@external tokens legacyPrint from "./tokens.js" { printKeyword[@name="print"] }
+@external tokens print from "./tokens.js" { printKeyword[@name="print"] }
 
 @external tokens indentation from "./tokens" { indent, dedent }
 

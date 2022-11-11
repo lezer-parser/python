@@ -40,7 +40,7 @@ print('00300:'
 
 ==>
 
-Script(ExpressionStatement(CallExpression(VariableName, ArgList(ContinuedString(String, String)))))
+Script(PrintStatement(print, ParenthesizedExpression(ContinuedString(String, String))))
 
 
 # Format strings
