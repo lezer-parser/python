@@ -1,3 +1,9 @@
+## 1.1.2 (2023-02-03)
+
+### Bug fixes
+
+Fix a bug that caused binary * and ** operators to be highlighted as keywords/modifiers.
+
 ## 1.1.1 (2022-10-31)
 
 ### Bug fixes
