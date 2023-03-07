@@ -5,7 +5,7 @@ import {
   PatternArgList, SequencePattern, MappingPattern,
   ArrayExpression, ArrayComprehensionExpression, ArgList, ParamList, importList, subscript,
   DictionaryExpression, DictionaryComprehensionExpression, SetExpression, SetComprehensionExpression, FormatReplacement,
-  ParenL, BraceL, BracketL
+  ParenL, BraceL, BracketL, BuiltinVariableName
 } from "./parser.terms.js"
 
 const newline = 10, carriageReturn = 13, space = 32, tab = 9, hash = 35, parenOpen = 40, dot = 46
@@ -98,3 +98,85 @@ export const legacyPrint = new ExternalTokenizer(input => {
     return
   }
 })
+
+const builtins = [
+"abs",
+"aiter",
+"all",
+"any",
+"anext",
+"ascii",
+"bin",
+"bool",
+"breakpoint",
+"bytearray",
+"bytes",
+"callable",
+"chr",
+"classmethod",
+"compile",
+"complex",
+"delattr",
+"dict",
+"dir",
+"divmod",
+"enumerate",
+"eval",
+"exec",
+"filter",
+"float",
+"format",
+"frozenset",
+"getattr",
+"globals",
+"hasattr",
+"hash",
+"help",
+"hex",
+"id",
+"input",
+"int",
+"isinstance",
+"issubclass",
+"iter",
+"len",
+"list",
+"locals",
+"map",
+"max",
+"memoryview",
+"min",
+"next",
+"object",
+"oct",
+"open",
+"ord",
+"pow",
+"print",
+"property",
+"range",
+"repr",
+"reversed",
+"round",
+"set",
+"setattr",
+"slice",
+"sorted",
+"staticmethod",
+"str",
+"sum",
+"super",
+"tuple",
+"type",
+"vars",
+"zip",
+"__import__"]
+
+export const specializeVariable = (value, stack) => {
+  if (builtins.includes(value)) {
+    console.log('builtin', value)
+    return BuiltinVariableName;
+  }
+  // do not specialize
+  return -1;
+};

@@ -110,7 +110,7 @@ async with foo as bar:
 ==>
 
 Script(
-  WithStatement(with, CallExpression(VariableName, ArgList(String)), as, VariableName, Body(PassStatement(pass))),
+  WithStatement(with, CallExpression(BuiltinVariableName, ArgList(String)), as, VariableName, Body(PassStatement(pass))),
   WithStatement(async, with, VariableName, as, VariableName, Body(PassStatement(pass))))
 
 # Class definition
@@ -284,7 +284,7 @@ except Exception, foo:
 
 Script(
   PrintStatement(print, String),
-  ExpressionStatement(CallExpression(VariableName, ArgList(MemberExpression(VariableName, PropertyName)))),
+  ExpressionStatement(CallExpression(BuiltinVariableName, ArgList(MemberExpression(BuiltinVariableName, PropertyName)))),
   TryStatement(try, Body(RaiseStatement(raise, VariableName, String)),
                except, VariableName, VariableName, Body(PassStatement(pass))))
 
@@ -345,7 +345,7 @@ class Employee:
 Script(ClassDefinition(class,VariableName,Body(
   AssignStatement(VariableName,TypeDef(VariableName)),
   AssignStatement(VariableName,TypeDef(VariableName)),
-  FunctionDefinition(def,VariableName,ParamList(VariableName,VariableName),Body(
+  FunctionDefinition(def,BuiltinVariableName,ParamList(VariableName,VariableName),Body(
     AssignStatement(MemberExpression(VariableName,PropertyName),AssignOp,VariableName),
     AssignStatement(MemberExpression(VariableName,PropertyName),AssignOp,VariableName))))))
 

@@ -180,6 +180,7 @@ expression[@isGroup=Expression] {
   CallExpression { expression !trail ArgList } |
   MemberExpression { expression !trail (subscript | "." PropertyName) } |
   VariableName |
+  BuiltinVariableName |
   Number |
   String | FormatString |
   ContinuedString { (String | FormatString) (String | FormatString)+ } |
@@ -348,6 +349,10 @@ FormatReplacement { "{" (YieldExpression | commaSep<"*"? test>) FormatConversion
 }
 
 @external tokens newlines from "./tokens" { newline, newlineBracketed, newlineEmpty, eof }
+
+@external specialize {identifier} specializeVariable from "./tokens" {
+  BuiltinVariableName
+}
 
 @external propSource pythonHighlighting from "./highlight"
 

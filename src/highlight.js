@@ -10,6 +10,7 @@ export const pythonHighlighting = styleTags({
   Boolean: t.bool,
   None: t.null,
   VariableName: t.variableName,
+  BuiltinVariableName: t.keyword,
   "CallExpression/VariableName": t.function(t.variableName),
   "FunctionDefinition/VariableName": t.function(t.definition(t.variableName)),
   "ClassDefinition/VariableName": t.definition(t.className),

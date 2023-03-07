@@ -40,7 +40,7 @@ print('00300:'
 
 ==>
 
-Script(ExpressionStatement(CallExpression(VariableName, ArgList(ContinuedString(String, String)))))
+Script(ExpressionStatement(CallExpression(BuiltinVariableName, ArgList(ContinuedString(String, String)))))
 
 
 # Format strings
@@ -127,7 +127,7 @@ Script(
 Script(
   ExpressionStatement(ArrayComprehensionExpression(
     BinaryExpression(VariableName, ArithOp, Number),
-    for VariableName in CallExpression(VariableName, ArgList(Number, Number)),
+    for VariableName in CallExpression(BuiltinVariableName, ArgList(Number, Number)),
     if BinaryExpression(BinaryExpression(VariableName, ArithOp, Number), CompareOp, Number))),
   ExpressionStatement(ComprehensionExpression(
     VariableName, for, VariableName, in, ArrayExpression(Number, Number))),
