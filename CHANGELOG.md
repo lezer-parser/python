@@ -1,3 +1,11 @@
+## 1.1.3 (2023-03-13)
+
+### Bug fixes
+
+Fix parsing of empty tuple expressions.
+
+Allow `:=` in subscript index expressions.
+
 ## 1.1.2 (2023-02-03)
 
 ### Bug fixes
