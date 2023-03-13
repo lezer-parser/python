@@ -189,7 +189,7 @@ expression[@isGroup=Expression] {
 }
 
 subscript[@export] {
-  "[" commaSep<test | test? ":" test? (":" test?)?> "]"
+  "[" commaSep<testNamed | testNamed? ":" testNamed? (":" testNamed?)?> "]"
 }
 
 ParenthesizedExpression { "(" (testNamed | "*" expression | YieldExpression) ")" }
