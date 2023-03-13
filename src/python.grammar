@@ -194,7 +194,7 @@ subscript[@export] {
 
 ParenthesizedExpression { "(" (testNamed | "*" expression | YieldExpression) ")" }
 
-TupleExpression { "(" (testNamed | "*" expression) (("," (testNamed | "*" expression))+ ","? | ",") ")" }
+TupleExpression { "(" ((testNamed | "*" expression) (("," (testNamed | "*" expression))+ ","? | ","))? ")" }
 ComprehensionExpression { "(" (testNamed | "*" expression) compFor ")" }
 
 ArrayExpression { "[" commaSep<testNamed | "*" expression>? "]" }
