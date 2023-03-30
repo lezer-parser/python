@@ -1,6 +1,6 @@
 import {ExternalTokenizer, ContextTracker} from "@lezer/lr"
 import {
-  newline as newlineToken, eof, newlineEmpty, newlineBracketed, indent, dedent, printKeyword,
+  newline as newlineToken, eof, newlineBracketed, blankLineStart, indent, dedent, printKeyword,
   ParenthesizedExpression, TupleExpression, ComprehensionExpression,
   PatternArgList, SequencePattern, MappingPattern,
   ArrayExpression, ArrayComprehensionExpression, ArgList, ParamList, importList, subscript,
@@ -18,20 +18,24 @@ const bracketed = new Set([
   SequencePattern, MappingPattern, PatternArgList
 ])
 
+function isLineBreak(ch) {
+  return ch == newline || ch == carriageReturn
+}
+
 export const newlines = new ExternalTokenizer((input, stack) => {
   if (input.next < 0) {
     input.acceptToken(eof)
-  } else if (input.next != newline && input.next != carriageReturn) {
   } else if (stack.context.depth < 0) {
-    input.acceptToken(newlineBracketed, 1)
-  } else {
-    input.advance()
+    if (isLineBreak(input.next)) input.acceptToken(newlineBracketed, 1)
+  } else if (isLineBreak(input.peek(-1)) && stack.canShift(blankLineStart)) {
     let spaces = 0
     while (input.next == space || input.next == tab) { input.advance(); spaces++ }
-    let empty = input.next == newline || input.next == carriageReturn || input.next == hash
-    input.acceptToken(empty ? newlineEmpty : newlineToken, -spaces)
+    if (input.next == newline || input.next == carriageReturn || input.next == hash)
+      input.acceptToken(blankLineStart, -spaces)
+  } else if (isLineBreak(input.next)) {
+    input.acceptToken(stack.context.depth < 0 ? newlineBracketed : newlineToken, 1)
   }
-}, {contextual: true, fallback: true})
+}, {contextual: true})
 
 export const indentation = new ExternalTokenizer((input, stack) => {
   let cDepth = stack.context.depth

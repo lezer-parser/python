@@ -15,9 +15,9 @@
   or @left
 }
 
-@top Script { (newline | statement)+ }
+@top Script { statement+ }
 
-@skip { space | newlineEmpty | newlineBracketed | Comment }
+@skip { space | newlineBracketed | Comment | blankLine }
 
 Decorator { At dottedName ArgList? newline }
 
@@ -259,6 +259,10 @@ skw<term> { @extend[@name={term}]<identifier, term> }
   }
 
   formatStringSpec { FormatSpec { ":" (formatStringSpecChars | FormatReplacement)* } "}" }
+
+  blankLine {
+    blankLineStart space? Comment? newline
+  }
 }
 
 FormatReplacement { "{" (YieldExpression | commaSep<"*"? test>) FormatConversion? (formatStringSpec | "}") }
@@ -268,6 +272,8 @@ FormatReplacement { "{" (YieldExpression | commaSep<"*"? test>) FormatConversion
 @external tokens legacyPrint from "./tokens.js" { printKeyword[@name="print"] }
 
 @external tokens indentation from "./tokens" { indent, dedent }
+
+@external tokens newlines from "./tokens" { newline, blankLineStart, newlineBracketed, eof }
 
 @tokens {
   CompareOp { "<" | ">" | $[<>=!] "=" | "<>" }
@@ -344,10 +350,7 @@ FormatReplacement { "{" (YieldExpression | commaSep<"*"? test>) FormatConversion
   "{"[@export=BraceL] "}"
 
   "." "," ";" ":" "@" "*" "**"
-
 }
-
-@external tokens newlines from "./tokens" { newline, newlineBracketed, newlineEmpty, eof }
 
 @external propSource pythonHighlighting from "./highlight"
 
