@@ -1,3 +1,9 @@
+## 1.1.4 (2023-03-30)
+
+### Bug fixes
+
+Make sure blocks stop at their final newline, and don't include any following blank lines.
+
 ## 1.1.3 (2023-03-13)
 
 ### Bug fixes
