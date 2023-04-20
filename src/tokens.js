@@ -33,7 +33,7 @@ export const newlines = new ExternalTokenizer((input, stack) => {
     if (input.next == newline || input.next == carriageReturn || input.next == hash)
       input.acceptToken(blankLineStart, -spaces)
   } else if (isLineBreak(input.next)) {
-    input.acceptToken(stack.context.depth < 0 ? newlineBracketed : newlineToken, 1)
+    input.acceptToken(newlineToken, 1)
   }
 }, {contextual: true})
 
@@ -41,7 +41,7 @@ export const indentation = new ExternalTokenizer((input, stack) => {
   let cDepth = stack.context.depth
   if (cDepth < 0) return
   let prev = input.peek(-1), depth
-  if ((prev == newline || prev == carriageReturn) && stack.context.depth >= 0) {
+  if (prev == newline || prev == carriageReturn) {
     let depth = 0, chars = 0
     for (;;) {
       if (input.next == space) depth++
