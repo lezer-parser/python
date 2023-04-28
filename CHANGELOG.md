@@ -1,3 +1,9 @@
+## 1.1.5 (2023-04-28)
+
+### Bug fixes
+
+Fix a bug that caused triple-quoted format strings with quotes in them to be parsed incorrectly.
+
 ## 1.1.4 (2023-03-30)
 
 ### Bug fixes
