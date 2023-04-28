@@ -50,6 +50,7 @@ f"double {quoted !s}"
 f"""big long format
   {string :foo}"""
 f'''well {{ \x }} {2 :{bar}}'''
+f"""one"{two}"three"""
 
 ==>
 
@@ -57,7 +58,8 @@ Script(ExpressionStatement(FormatString(FormatReplacement(Number),
                            FormatReplacement(BinaryExpression(VariableName, ArithOp, Number)))),
        ExpressionStatement(FormatString(FormatReplacement(VariableName, FormatConversion))),
        ExpressionStatement(FormatString(FormatReplacement(VariableName, FormatSpec))),
-       ExpressionStatement(FormatString(FormatReplacement(Number, FormatSpec(FormatReplacement(VariableName))))))
+       ExpressionStatement(FormatString(FormatReplacement(Number, FormatSpec(FormatReplacement(VariableName))))),
+       ExpressionStatement(FormatString(FormatReplacement(VariableName))))
 
 # Lambda
 

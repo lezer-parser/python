@@ -2,19 +2,24 @@ import {ExternalTokenizer, ContextTracker} from "@lezer/lr"
 import {
   newline as newlineToken, eof, newlineBracketed, blankLineStart, indent, dedent, printKeyword,
   ParenthesizedExpression, TupleExpression, ComprehensionExpression,
-  PatternArgList, SequencePattern, MappingPattern,
+  PatternArgList, SequencePattern, MappingPattern, FormatString,
   ArrayExpression, ArrayComprehensionExpression, ArgList, ParamList, importList, subscript,
-  DictionaryExpression, DictionaryComprehensionExpression, SetExpression, SetComprehensionExpression, FormatReplacement,
+  DictionaryExpression, DictionaryComprehensionExpression, SetExpression, SetComprehensionExpression,
+  formatString1Content, formatString1Brace, formatString1End,
+  formatString2Content, formatString2Brace, formatString2End,
+  formatString1lContent, formatString1lBrace, formatString1lEnd,
+  formatString2lContent, formatString2lBrace, formatString2lEnd,
   ParenL, BraceL, BracketL
 } from "./parser.terms.js"
 
-const newline = 10, carriageReturn = 13, space = 32, tab = 9, hash = 35, parenOpen = 40, dot = 46
+const newline = 10, carriageReturn = 13, space = 32, tab = 9, hash = 35, parenOpen = 40, dot = 46,
+      braceOpen = 123, singleQuote = 39, doubleQuote = 34
 
 const bracketed = new Set([
   ParenthesizedExpression, TupleExpression, ComprehensionExpression, importList, ArgList, ParamList,
   ArrayExpression, ArrayComprehensionExpression, subscript,
-  SetExpression, SetComprehensionExpression,
-  DictionaryExpression, DictionaryComprehensionExpression, FormatReplacement,
+  SetExpression, SetComprehensionExpression, FormatString,
+  DictionaryExpression, DictionaryComprehensionExpression,
   SequencePattern, MappingPattern, PatternArgList
 ])
 
@@ -102,3 +107,41 @@ export const legacyPrint = new ExternalTokenizer(input => {
     return
   }
 })
+
+function formatString(quote, len, content, brace, end) {
+  return new ExternalTokenizer(input => {
+    let start = input.pos
+    for (;;) {
+      if (input.next < 0) {
+        break
+      } else if (input.next == braceOpen) {
+        if (input.peek(1) == braceOpen) {
+          input.advance(2)
+        } else {
+          if (input.pos == start) {
+            input.acceptToken(brace, 1)
+            return
+          }
+          break
+        }
+      } else if (input.next == "\\") {
+        input.advance()
+        if (input.next >= 0) input.advance()
+      } else if (input.next == quote && (len == 1 || input.peek(1) == quote && input.peek(2) == quote)) {
+        if (input.pos == start) {
+          input.acceptToken(end, len)
+          return
+        }
+        break
+      } else {
+        input.advance()
+      }
+    }
+    if (input.pos > start) input.acceptToken(content)
+  })
+}
+
+export const formatString1 = formatString(singleQuote, 1, formatString1Content, formatString1Brace, formatString1End)
+export const formatString2 = formatString(doubleQuote, 1, formatString2Content, formatString2Brace, formatString2End)
+export const formatString1l = formatString(singleQuote, 3, formatString1lContent, formatString1lBrace, formatString1lEnd)
+export const formatString2l = formatString(doubleQuote, 3, formatString2lContent, formatString2lBrace, formatString2lEnd)

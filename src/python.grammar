@@ -252,20 +252,20 @@ skw<term> { @extend[@name={term}]<identifier, term> }
   }
 
   FormatString {
-    formatStringStart<"'"> (formatString1Content | FormatReplacement)* "'" |
-    formatStringStart<'"'> (formatString2Content | FormatReplacement)* '"' |
-    longFormatStringStart<"'"> (longFormatString1Content | FormatReplacement)* "'''" |
-    longFormatStringStart<'"'> (longFormatString2Content | FormatReplacement)* '"""'
+    formatStringStart<"'"> (formatString1Content | FormatReplacement<formatString1Brace>)* formatString1End |
+    formatStringStart<'"'> (formatString2Content | FormatReplacement<formatString2Brace>)* formatString2End |
+    longFormatStringStart<"'"> (formatString1lContent | FormatReplacement<formatString1lBrace>)* formatString1lEnd |
+    longFormatStringStart<'"'> (formatString2lContent | FormatReplacement<formatString2lBrace>)* formatString2lEnd
   }
 
-  formatStringSpec { FormatSpec { ":" (formatStringSpecChars | FormatReplacement)* } "}" }
+  formatStringSpec { FormatSpec { ":" (formatStringSpecChars | FormatReplacement<"{">)* } "}" }
 
   blankLine {
     blankLineStart space? Comment? newline
   }
 }
 
-FormatReplacement { "{" (YieldExpression | commaSep<"*"? test>) FormatConversion? (formatStringSpec | "}") }
+FormatReplacement<start> { start (YieldExpression | commaSep<"*"? test>) FormatConversion? (formatStringSpec | "}") }
 
 @context trackIndent from "./tokens.js"
 
@@ -274,6 +274,11 @@ FormatReplacement { "{" (YieldExpression | commaSep<"*"? test>) FormatConversion
 @external tokens indentation from "./tokens" { indent, dedent }
 
 @external tokens newlines from "./tokens" { newline, blankLineStart, newlineBracketed, eof }
+
+@external tokens formatString1 from "./tokens" { formatString1Content, formatString1Brace[@name="{"], formatString1End }
+@external tokens formatString2 from "./tokens" { formatString2Content, formatString2Brace[@name="{"], formatString2End }
+@external tokens formatString1l from "./tokens" { formatString1lContent, formatString1lBrace[@name="{"], formatString1lEnd }
+@external tokens formatString2l from "./tokens" { formatString2lContent, formatString2lBrace[@name="{"], formatString2lEnd }
 
 @tokens {
   CompareOp { "<" | ">" | $[<>=!] "=" | "<>" }
@@ -304,9 +309,6 @@ FormatReplacement { "{" (YieldExpression | commaSep<"*"? test>) FormatConversion
 
   formatStringSpecChars { ![{}]+ }
 
-  formatString1Content { (!['{\\] | "\\" _ | "{{")+ }
-  formatString2Content { (!["{\\] | "\\" _ | "{{")+ }
-
   longStringStart<quote> { stringPrefix? quote quote quote }
 
   longString1Content { (!['\\] | "\\" _ | "'" longString1_2)+ }
@@ -318,16 +320,6 @@ FormatReplacement { "{" (YieldExpression | commaSep<"*"? test>) FormatConversion
   longString2_3 { !["\\] | "\\" _ }
 
   longFormatStringStart<quote> { formatPrefix quote quote quote }
-
-  longFormatString1Content { (!['\\{] | "\\" _ | "'" longFormatString1_2 | "{{")+ }
-  longFormatString1_2 { !['\\{] | "\\" _ | "{{" | "'" longFormatString1_3 }
-  longFormatString1_3 { !['\\{] | "\\" _ | "{{" }
-
-  longFormatString2Content { (!["\\{] | "\\" _ | '"' longFormatString2_2 | "{{")+ }
-  longFormatString2_2 { !["\\{] | "\\" _ | "{{" | '"' longFormatString2_3 }
-  longFormatString2_3 { !["\\{] | "\\" _ | "{{" }
-
-  @precedence { "{", formatString1Content, formatString2Content, longFormatString1Content, longFormatString2Content }
 
   Number {
     (@digit ("_" | @digit)* ("." @digit ("_" | @digit)*)? | "." @digit ("_" | @digit)*)
