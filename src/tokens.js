@@ -28,11 +28,13 @@ function isLineBreak(ch) {
 }
 
 export const newlines = new ExternalTokenizer((input, stack) => {
+  let prev
   if (input.next < 0) {
     input.acceptToken(eof)
   } else if (stack.context.depth < 0) {
     if (isLineBreak(input.next)) input.acceptToken(newlineBracketed, 1)
-  } else if (isLineBreak(input.peek(-1)) && stack.canShift(blankLineStart)) {
+  } else if (((prev = input.peek(-1)) < 0 || isLineBreak(prev)) &&
+             stack.canShift(blankLineStart)) {
     let spaces = 0
     while (input.next == space || input.next == tab) { input.advance(); spaces++ }
     if (input.next == newline || input.next == carriageReturn || input.next == hash)
