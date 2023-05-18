@@ -1,3 +1,9 @@
+## 1.1.6 (2023-05-18)
+
+### Bug fixes
+
+Fix parsing of blank lines at the start of the document.
+
 ## 1.1.5 (2023-04-28)
 
 ### Bug fixes
