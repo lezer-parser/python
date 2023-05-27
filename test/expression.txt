@@ -45,8 +45,8 @@ Script(ExpressionStatement(CallExpression(VariableName, ArgList(ContinuedString(
 
 # Format strings
 
-f'hello{22} abc {{ }} {d-1}'
-f"double {quoted !s}"
+f'hello{22} abc\' {{ }} {d-1}'
+f"double\" {quoted !s}"
 f"""big long format
   {string :foo}"""
 f'''well {{ \x }} {2 :{bar}}'''
@@ -206,6 +206,7 @@ Script(AssignStatement(VariableName, AssignOp, ConditionalExpression(Number, if,
 2 ** 3 ** 2
 
 ==>
+
 Script(ExpressionStatement(BinaryExpression(
   Number,ArithOp("**"),
   BinaryExpression(Number,ArithOp("**"),Number))))

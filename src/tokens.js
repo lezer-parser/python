@@ -13,7 +13,7 @@ import {
 } from "./parser.terms.js"
 
 const newline = 10, carriageReturn = 13, space = 32, tab = 9, hash = 35, parenOpen = 40, dot = 46,
-      braceOpen = 123, singleQuote = 39, doubleQuote = 34
+      braceOpen = 123, singleQuote = 39, doubleQuote = 34, backslash = 92
 
 const bracketed = new Set([
   ParenthesizedExpression, TupleExpression, ComprehensionExpression, importList, ArgList, ParamList,
@@ -126,7 +126,7 @@ function formatString(quote, len, content, brace, end) {
           }
           break
         }
-      } else if (input.next == "\\") {
+      } else if (input.next == backslash) {
         input.advance()
         if (input.next >= 0) input.advance()
       } else if (input.next == quote && (len == 1 || input.peek(1) == quote && input.peek(2) == quote)) {
