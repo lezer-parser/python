@@ -1,3 +1,9 @@
+## 1.1.7 (2023-05-27)
+
+### Bug fixes
+
+Fix a bug that broke handling of escaped quotes in format strings.
+
 ## 1.1.6 (2023-05-18)
 
 ### Bug fixes
