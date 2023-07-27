@@ -222,7 +222,7 @@ BinaryExpression {
 
 ArgList { "(" commaSep<argument>? ")" }
 
-argument { test compFor? | VariableName AssignOp{"=" | ":="} test | "**" test | "*" test }
+argument { test compFor? | VariableName AssignOp{"=" | ":="} test compFor? | "**" test | "*" test }
 
 compFor {
   kw<"async">? kw<"for"> commaSep<expression> kw<"in"> testInner (compFor | compIf)?
