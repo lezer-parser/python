@@ -2,7 +2,7 @@ import {ExternalTokenizer, ContextTracker} from "@lezer/lr"
 import {
   newline as newlineToken, eof, newlineBracketed, blankLineStart, indent, dedent, printKeyword,
   ParenthesizedExpression, TupleExpression, ComprehensionExpression,
-  PatternArgList, SequencePattern, MappingPattern, FormatString,
+  PatternArgList, SequencePattern, MappingPattern, FormatString, TypeParamList,
   ArrayExpression, ArrayComprehensionExpression, ArgList, ParamList, importList, subscript,
   DictionaryExpression, DictionaryComprehensionExpression, SetExpression, SetComprehensionExpression,
   formatString1Content, formatString1Brace, formatString1End,
@@ -20,7 +20,7 @@ const bracketed = new Set([
   ArrayExpression, ArrayComprehensionExpression, subscript,
   SetExpression, SetComprehensionExpression, FormatString,
   DictionaryExpression, DictionaryComprehensionExpression,
-  SequencePattern, MappingPattern, PatternArgList
+  SequencePattern, MappingPattern, PatternArgList, TypeParamList
 ])
 
 function isLineBreak(ch) {

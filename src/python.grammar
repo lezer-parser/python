@@ -22,13 +22,20 @@
 Decorator { At dottedName ArgList? newline }
 
 FunctionDefinition {
-  kw<"async">? kw<"def"> VariableName
+  kw<"async">? kw<"def"> VariableName TypeParamList?
   ParamList
   TypeDef { "->" test }?
   Body
 }
 
 ParamList { "(" commaSep<param>? ")" }
+
+TypeParamList { "[" commaSep<TypeParam> "]" }
+
+TypeParam {
+  ("*" | "**") VariableName |
+  VariableName TypeDef?
+}
 
 MatchStatement {
   skw<"match"> "*"? expression MatchBody { ":" newline indent MatchClause+ (dedent | eof) }
@@ -65,7 +72,7 @@ SequencePattern { "[" commaSep<pattern> "]" | "(" commaSep<pattern> ")" }
 
 MappingPattern { "{" commaSep<"**" pattern | (VariableName | LiteralPattern) ":" pattern> "}" }
 
-ClassDefinition { kw<"class"> VariableName ArgList? Body }
+ClassDefinition { kw<"class"> VariableName TypeParamList? ArgList? Body }
 
 param { VariableName TypeDef? (AssignOp{"="} test)? | "*" VariableName? | "**" VariableName | "/" }
 
@@ -92,7 +99,8 @@ smallStatement {
   RaiseStatement { kw<"raise"> (test (kw<"from"> test | ("," test ("," test)?))?)? } |
   ImportStatement |
   ScopeStatement { (kw<"global"> | kw<"nonlocal">) commaSep<VariableName> } |
-  AssertStatement { kw<"assert"> commaSep<test> }
+  AssertStatement { kw<"assert"> commaSep<test> } |
+  TypeDefinition { skw<"type"> VariableName TypeParamList? "=" test }
 }
 
 expressions { commaSep<"*" expression | test> }

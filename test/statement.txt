@@ -383,3 +383,32 @@ Script(MatchStatement(match,VariableName,MatchBody(
       LogicOp,
       SequencePattern(CapturePattern(VariableName),CapturePattern(VariableName))),
     Body(PassStatement(pass))))))
+
+# Type Params
+
+class ClassA[T: str]:
+  def method1(self) -> T:
+    pass
+
+def func[**T](a: T, b: T) -> T:
+  pass
+
+==>
+
+Script(
+  ClassDefinition(class,VariableName,
+    TypeParamList(TypeParam(VariableName,TypeDef(":",VariableName))),
+    Body(FunctionDefinition(def,VariableName,ParamList(VariableName),TypeDef(VariableName),
+      Body(PassStatement(pass))))),
+  FunctionDefinition(def,VariableName,TypeParamList(TypeParam(VariableName)),
+    ParamList(VariableName,TypeDef(VariableName),VariableName,TypeDef(VariableName)),
+    TypeDef(VariableName),
+    Body(PassStatement(pass))))
+
+# Type Definition
+
+type Point = tuple[float, float]
+
+==>
+
+Script(TypeDefinition(type,VariableName,MemberExpression(VariableName,VariableName,",",VariableName)))
