@@ -128,7 +128,7 @@ IfStatement {
 
 TryStatement {
   kw<"try"> Body
-  (kw<"except"> (test ((kw<"as"> | ",") VariableName)?)? Body)*
+  (kw<"except"> "*"? (test ((kw<"as"> | ",") VariableName)?)? Body)*
   elseClause?
   (kw<"finally"> Body)?
 }
