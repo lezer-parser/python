@@ -1,3 +1,13 @@
+## 1.1.9 (2023-10-20)
+
+### Bug fixes
+
+Fix parsing of argument lists that are a comprehension that start with an assignment.
+
+Add support for PEP 654 `except*` syntax.
+
+Implement PEP 695 type parameter syntax.
+
 ## 1.1.8 (2023-07-03)
 
 ### Bug fixes
