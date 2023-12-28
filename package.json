@@ -19,6 +19,7 @@
     "@rollup/plugin-node-resolve": "^9.0.0"
   },
   "dependencies": {
+    "@lezer/common": "^1.2.0",
     "@lezer/lr": "^1.0.0",
     "@lezer/highlight": "^1.0.0"
   },
