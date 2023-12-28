@@ -1,3 +1,9 @@
+## 1.1.10 (2023-12-28)
+
+### Bug fixes
+
+Tag comments and strings as isolating for the purpose of bidirectional text.
+
 ## 1.1.9 (2023-10-20)
 
 ### Bug fixes
