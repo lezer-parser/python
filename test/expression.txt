@@ -51,6 +51,7 @@ f"""big long format
   {string :foo}"""
 f'''well {{ \x }} {2 :{bar}}'''
 f"""one"{two}"three"""
+f'{user=!s}  {delta.days=:,d}'
 
 ==>
 
@@ -59,7 +60,10 @@ Script(ExpressionStatement(FormatString(FormatReplacement(Number),
        ExpressionStatement(FormatString(FormatReplacement(VariableName, FormatConversion))),
        ExpressionStatement(FormatString(FormatReplacement(VariableName, FormatSpec))),
        ExpressionStatement(FormatString(FormatReplacement(Number, FormatSpec(FormatReplacement(VariableName))))),
-       ExpressionStatement(FormatString(FormatReplacement(VariableName))))
+       ExpressionStatement(FormatString(FormatReplacement(VariableName))),
+       ExpressionStatement(FormatString(
+         FormatReplacement(VariableName,FormatSelfDoc,FormatConversion),
+         FormatReplacement(MemberExpression(VariableName,PropertyName),FormatSelfDoc,FormatSpec))))
 
 # Lambda
 

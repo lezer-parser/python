@@ -273,7 +273,13 @@ skw<term> { @extend[@name={term}]<identifier, term> }
   }
 }
 
-FormatReplacement[isolate]<start> { start (YieldExpression | commaSep<"*"? test>) FormatConversion? (formatStringSpec | "}") }
+FormatReplacement[isolate]<start> {
+  start
+  (YieldExpression | commaSep<"*"? test>)
+  FormatSelfDoc {"="}?
+  FormatConversion?
+  (formatStringSpec | "}")
+}
 
 @context trackIndent from "./tokens.js"
 
