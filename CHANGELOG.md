@@ -1,3 +1,9 @@
+## 1.1.11 (2024-01-16)
+
+### Bug fixes
+
+Support the `=` flag to values in format strings.
+
 ## 1.1.10 (2023-12-28)
 
 ### Bug fixes
