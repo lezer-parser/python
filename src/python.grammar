@@ -254,7 +254,8 @@ skw<term> { @extend[@name={term}]<identifier, term> }
 
 @skip {} {
   String[isolate] {
-    shortString |
+    shortStringStart<"'"> (stringContent1 | Escape)* "'" |
+    shortStringStart<'"'> (stringContent2 | Escape)* '"' |
     longStringStart<"'"> longString1Content* "'''" |
     longStringStart<'"'> longString2Content* '"""'
   }
@@ -301,7 +302,7 @@ FormatReplacement[isolate]<start> {
 
   @precedence {
     longStringStart<"'">, longStringStart<'"'>, longFormatStringStart<"'">, longFormatStringStart<'"'>,
-    shortString, formatStringStart<"'">, formatStringStart<'"'>,
+    shortStringStart<"'">, shortStringStart<'"'>, formatStringStart<"'">, formatStringStart<'"'>,
     identifier
   }
 
@@ -311,11 +312,16 @@ FormatReplacement[isolate]<start> {
 
   identifier { word }
 
+  Escape {
+    "\\" _
+  }
+
   stringPrefix { $[rRuUbB] | $[bB] $[rR] | $[rR] $[bR] }
 
   formatPrefix { $[fF] | $[fF] $[rR] | $[rR] $[fF] }
 
-  shortString { stringPrefix? ("'" (!['\\\n\r] | "\\" _)* "'"? | '"' (!["\\\n\r] | "\\" _)* '"'?) }
+  stringContent1 { !['\\\n\r]+ }
+  stringContent2 { !["\\\n\r]+ }
 
   formatStringStart<quote> { formatPrefix quote }
 
@@ -323,6 +329,7 @@ FormatReplacement[isolate]<start> {
 
   formatStringSpecChars { ![{}]+ }
 
+  shortStringStart<quote> { stringPrefix? quote }
   longStringStart<quote> { stringPrefix? quote quote quote }
 
   longString1Content { (!['\\] | "\\" _ | "'" longString1_2)+ }

@@ -1,3 +1,6 @@
+/* Hand-written tokenizers for Python tokens that can't be
+   expressed by lezer's built-in tokenizer. */
+
 import {ExternalTokenizer, ContextTracker} from "@lezer/lr"
 import {
   newline as newlineToken, eof, newlineBracketed, blankLineStart, indent, dedent, printKeyword,
