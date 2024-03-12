@@ -26,12 +26,20 @@ on two lines'''
 
 quotes"""
 
+"and\awith\nescapes"
+
+"""even
+\bmultiline\c
+escapes"""
+
 ==>
 
 Script(ExpressionStatement(ContinuedString(String, String)),
        ExpressionStatement(String),
        ExpressionStatement(String),
-       ExpressionStatement(String))
+       ExpressionStatement(String),
+       ExpressionStatement(String(Escape, Escape)),
+       ExpressionStatement(String(Escape, Escape)))
 
 # Bracketed continued string
 
