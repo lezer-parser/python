@@ -254,32 +254,36 @@ skw<term> { @extend[@name={term}]<identifier, term> }
 
 @skip {} {
   String[isolate] {
-    shortString |
-    longStringStart<"'"> longString1Content* "'''" |
-    longStringStart<'"'> longString2Content* '"""'
+    (stringStart | stringStartD | stringStartL | stringStartLD |
+     stringStartR | stringStartRD | stringStartRL | stringStartRLD)
+    (stringContent | Escape)*
+    stringEnd
   }
 
   FormatString[isolate] {
-    formatStringStart<"'"> (formatString1Content | FormatReplacement<formatString1Brace>)* formatString1End |
-    formatStringStart<'"'> (formatString2Content | FormatReplacement<formatString2Brace>)* formatString2End |
-    longFormatStringStart<"'"> (formatString1lContent | FormatReplacement<formatString1lBrace>)* formatString1lEnd |
-    longFormatStringStart<'"'> (formatString2lContent | FormatReplacement<formatString2lBrace>)* formatString2lEnd
+    (stringStartF | stringStartFD | stringStartFL | stringStartFLD |
+     stringStartFR | stringStartFRD | stringStartFRL | stringStartFRLD)
+    (stringContent | Escape | FormatReplacement)*
+    stringEnd
   }
 
-  formatStringSpec { FormatSpec { ":" (formatStringSpecChars | FormatReplacement<"{">)* } "}" }
+  formatStringSpec { FormatSpec { ":" (formatStringSpecChars | nestedFormatReplacement)* } "}" }
 
   blankLine {
     blankLineStart space? Comment? newline
   }
 }
 
-FormatReplacement[isolate]<start> {
+formatReplacement<start> {
   start
   (YieldExpression | commaSep<"*"? test>)
   FormatSelfDoc {"="}?
   FormatConversion?
   (formatStringSpec | "}")
 }
+
+FormatReplacement[isolate] { formatReplacement<replacementStart> }
+nestedFormatReplacement[isolate,@name=FormatReplacement,@export] { formatReplacement<"{"> }
 
 @context trackIndent from "./tokens.js"
 
@@ -289,21 +293,55 @@ FormatReplacement[isolate]<start> {
 
 @external tokens newlines from "./tokens" { newline, blankLineStart, newlineBracketed, eof }
 
-@external tokens formatString1 from "./tokens" { formatString1Content, formatString1Brace[@name="{"], formatString1End }
-@external tokens formatString2 from "./tokens" { formatString2Content, formatString2Brace[@name="{"], formatString2End }
-@external tokens formatString1l from "./tokens" { formatString1lContent, formatString1lBrace[@name="{"], formatString1lEnd }
-@external tokens formatString2l from "./tokens" { formatString2lContent, formatString2lBrace[@name="{"], formatString2lEnd }
+@external tokens strings from "./tokens" {
+  stringContent
+  Escape
+  replacementStart[@name="{"]
+  stringEnd
+}
 
 @tokens {
   CompareOp { "<" | ">" | $[<>=!] "=" | "<>" }
 
   UpdateOp { ($[+\-@%&|^] | "<<" | ">>" | "*" "*"? | "/" "/"?) "=" }
 
-  @precedence {
-    longStringStart<"'">, longStringStart<'"'>, longFormatStringStart<"'">, longFormatStringStart<'"'>,
-    shortString, formatStringStart<"'">, formatStringStart<'"'>,
-    identifier
-  }
+  // String types are identified by letter suffixes:
+  //   D: double quoted
+  //   L: long string
+  //   R: raw string
+  //   F: format string
+  stringStart[@export] { stringPrefix? "'" }
+  stringStartD[@export] { stringPrefix? '"' }
+  stringStartL[@export] { stringPrefix? "'''" }
+  stringStartLD[@export] { stringPrefix? '"""' }
+  stringStartR[@export] { stringPrefixR "'" }
+  stringStartRD[@export] { stringPrefixR '"' }
+  stringStartRL[@export] { stringPrefixR "'''" }
+  stringStartRLD[@export] { stringPrefixR '"""' }
+  stringStartF[@export] { stringPrefixF "'" }
+  stringStartFD[@export] { stringPrefixF '"' }
+  stringStartFL[@export] { stringPrefixF "'''" }
+  stringStartFLD[@export] { stringPrefixF '"""' }
+  stringStartFR[@export] { stringPrefixFR "'" }
+  stringStartFRD[@export] { stringPrefixFR '"' }
+  stringStartFRL[@export] { stringPrefixFR "'''" }
+  stringStartFRLD[@export] { stringPrefixFR '"""' }
+
+  stringPrefix { $[uUbB] }
+  stringPrefixR { $[rR] $[bB]? | $[bB] $[rR] }
+  stringPrefixF { $[fF] }
+  stringPrefixFR { $[rR] $[fF] | $[fF] $[rR] }
+
+  // Give string quotes a higher precedence than identifiers, and long
+  // strings a higher precedence than short strings
+  @precedence { stringStartL, stringStart, identifier }
+  @precedence { stringStartLD, stringStartD, identifier }
+  @precedence { stringStartRL, stringStartR, identifier }
+  @precedence { stringStartRLD, stringStartRD, identifier }
+  @precedence { stringStartFL, stringStartF, identifier }
+  @precedence { stringStartFLD, stringStartFD, identifier }
+  @precedence { stringStartFRL, stringStartFR, identifier }
+  @precedence { stringStartFRLD, stringStartFRD, identifier }
 
   identifierChar { @asciiLetter | $[_\u{a1}-\u{10ffff}] }
 
@@ -311,29 +349,9 @@ FormatReplacement[isolate]<start> {
 
   identifier { word }
 
-  stringPrefix { $[rRuUbB] | $[bB] $[rR] | $[rR] $[bR] }
-
-  formatPrefix { $[fF] | $[fF] $[rR] | $[rR] $[fF] }
-
-  shortString { stringPrefix? ("'" (!['\\\n\r] | "\\" _)* "'"? | '"' (!["\\\n\r] | "\\" _)* '"'?) }
-
-  formatStringStart<quote> { formatPrefix quote }
-
   FormatConversion { "!" $[sra] }
 
   formatStringSpecChars { ![{}]+ }
-
-  longStringStart<quote> { stringPrefix? quote quote quote }
-
-  longString1Content { (!['\\] | "\\" _ | "'" longString1_2)+ }
-  longString1_2 { !['\\] | "\\" _ | "'" longString1_3 }
-  longString1_3 { !['\\] | "\\" _ }
-
-  longString2Content { (!["\\] | "\\" _ | '"' longString2_2)+ }
-  longString2_2 { !["\\] | "\\" _ | '"' longString2_3 }
-  longString2_3 { !["\\] | "\\" _ }
-
-  longFormatStringStart<quote> { formatPrefix quote quote quote }
 
   Number {
     (@digit ("_" | @digit)* ("." @digit ("_" | @digit)*)? | "." @digit ("_" | @digit)*)
