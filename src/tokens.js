@@ -118,22 +118,18 @@ function longStringContent(quote) {
   return new ExternalTokenizer(input => {
     const qord = quote.charCodeAt(0);
     const token = quote === "'" ? longString1lContent : longString2lContent;
-    const testExit = quote === "'" ? /['\\]/ : /["\\]/;
-    let i = 0;
-    for(;; i++) {
+    let start = input.pos
+    for(;;) {
       // End of long string
-      const char = String.fromCharCode(input.next);
-      if (char === quote && input.peek(1) === qord && input.peek(2) === qord) {
+      if (input.next === qord && input.peek(1) === qord && input.peek(2) === qord) {
         break
       }
-      if (testExit.test(char)) {
+      if (input.next === backslash) {
           break
       }
       input.advance()
     }
-    if (i > 0) {
-      input.acceptToken(token)
-    }
+    if (input.pos > start) input.acceptToken(token)
   });
 }
 
