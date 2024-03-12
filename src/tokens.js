@@ -150,8 +150,7 @@ function formatString(quote, len, content, brace, end) {
           break
         }
       } else if (input.next == backslash) {
-        input.advance()
-        if (input.next >= 0) input.advance()
+        break
       } else if (input.next == quote && (len == 1 || input.peek(1) == quote && input.peek(2) == quote)) {
         if (input.pos == start) {
           input.acceptToken(end, len)

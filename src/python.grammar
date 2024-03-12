@@ -261,10 +261,10 @@ skw<term> { @extend[@name={term}]<identifier, term> }
   }
 
   FormatString[isolate] {
-    formatStringStart<"'"> (formatString1Content | FormatReplacement<formatString1Brace>)* formatString1End |
-    formatStringStart<'"'> (formatString2Content | FormatReplacement<formatString2Brace>)* formatString2End |
-    longFormatStringStart<"'"> (formatString1lContent | FormatReplacement<formatString1lBrace>)* formatString1lEnd |
-    longFormatStringStart<'"'> (formatString2lContent | FormatReplacement<formatString2lBrace>)* formatString2lEnd
+    formatStringStart<"'"> (formatString1Content | Escape | FormatReplacement<formatString1Brace>)* formatString1End |
+    formatStringStart<'"'> (formatString2Content | Escape | FormatReplacement<formatString2Brace>)* formatString2End |
+    longFormatStringStart<"'"> (formatString1lContent | Escape | FormatReplacement<formatString1lBrace>)* formatString1lEnd |
+    longFormatStringStart<'"'> (formatString2lContent | Escape | FormatReplacement<formatString2lBrace>)* formatString2lEnd
   }
 
   formatStringSpec { FormatSpec { ":" (formatStringSpecChars | FormatReplacement<"{">)* } "}" }

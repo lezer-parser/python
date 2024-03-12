@@ -61,17 +61,25 @@ f'''well {{ \x }} {2 :{bar}}'''
 f"""one"{two}"three"""
 f'{user=!s}  {delta.days=:,d}'
 
+f"and\a{'with'}\nescapes"
+
+f"""even
+\bmultiline\c
+{foo}"""
+
 ==>
 
-Script(ExpressionStatement(FormatString(FormatReplacement(Number),
+Script(ExpressionStatement(FormatString(FormatReplacement(Number), Escape,
                            FormatReplacement(BinaryExpression(VariableName, ArithOp, Number)))),
-       ExpressionStatement(FormatString(FormatReplacement(VariableName, FormatConversion))),
+       ExpressionStatement(FormatString(Escape, FormatReplacement(VariableName, FormatConversion))),
        ExpressionStatement(FormatString(FormatReplacement(VariableName, FormatSpec))),
-       ExpressionStatement(FormatString(FormatReplacement(Number, FormatSpec(FormatReplacement(VariableName))))),
+       ExpressionStatement(FormatString(Escape, FormatReplacement(Number, FormatSpec(FormatReplacement(VariableName))))),
        ExpressionStatement(FormatString(FormatReplacement(VariableName))),
        ExpressionStatement(FormatString(
          FormatReplacement(VariableName,FormatSelfDoc,FormatConversion),
-         FormatReplacement(MemberExpression(VariableName,PropertyName),FormatSelfDoc,FormatSpec))))
+         FormatReplacement(MemberExpression(VariableName,PropertyName),FormatSelfDoc,FormatSpec)))
+       ExpressionStatement(FormatString(Escape, FormatReplacement(String), Escape)),
+       ExpressionStatement(FormatString(Escape, Escape, FormatReplacement(VariableName))))
 
 # Lambda
 
