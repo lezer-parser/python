@@ -1,3 +1,9 @@
+## 1.1.12 (2024-03-12)
+
+### Bug fixes
+
+Emit syntax nodes for backslash escapes in strings.
+
 ## 1.1.11 (2024-01-16)
 
 ### Bug fixes
