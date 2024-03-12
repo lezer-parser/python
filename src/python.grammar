@@ -256,8 +256,8 @@ skw<term> { @extend[@name={term}]<identifier, term> }
   String[isolate] {
     shortStringStart<"'"> (stringContent1 | Escape)* "'" |
     shortStringStart<'"'> (stringContent2 | Escape)* '"' |
-    longStringStart<"'"> longString1Content* "'''" |
-    longStringStart<'"'> longString2Content* '"""'
+    longStringStart<"'"> (longString1lContent | Escape)* "'''" |
+    longStringStart<'"'> (longString2lContent | Escape)* '"""'
   }
 
   FormatString[isolate] {
@@ -283,6 +283,9 @@ FormatReplacement[isolate]<start> {
 }
 
 @context trackIndent from "./tokens.js"
+
+@external tokens longString1Content from "./tokens.js" { longString1lContent }
+@external tokens longString2Content from "./tokens.js" { longString2lContent }
 
 @external tokens legacyPrint from "./tokens.js" { printKeyword[@name="print"] }
 
@@ -331,14 +334,6 @@ FormatReplacement[isolate]<start> {
 
   shortStringStart<quote> { stringPrefix? quote }
   longStringStart<quote> { stringPrefix? quote quote quote }
-
-  longString1Content { (!['\\] | "\\" _ | "'" longString1_2)+ }
-  longString1_2 { !['\\] | "\\" _ | "'" longString1_3 }
-  longString1_3 { !['\\] | "\\" _ }
-
-  longString2Content { (!["\\] | "\\" _ | '"' longString2_2)+ }
-  longString2_2 { !["\\] | "\\" _ | '"' longString2_3 }
-  longString2_3 { !["\\] | "\\" _ }
 
   longFormatStringStart<quote> { formatPrefix quote quote quote }
 

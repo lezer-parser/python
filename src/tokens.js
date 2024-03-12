@@ -8,6 +8,7 @@ import {
   PatternArgList, SequencePattern, MappingPattern, FormatString, TypeParamList,
   ArrayExpression, ArrayComprehensionExpression, ArgList, ParamList, importList, subscript,
   DictionaryExpression, DictionaryComprehensionExpression, SetExpression, SetComprehensionExpression,
+  longString1lContent, longString2lContent,
   formatString1Content, formatString1Brace, formatString1End,
   formatString2Content, formatString2Brace, formatString2End,
   formatString1lContent, formatString1lBrace, formatString1lEnd,
@@ -113,6 +114,29 @@ export const legacyPrint = new ExternalTokenizer(input => {
   }
 })
 
+function longStringContent(quote) {
+  return new ExternalTokenizer(input => {
+    const qord = quote.charCodeAt(0);
+    const token = quote === "'" ? longString1lContent : longString2lContent;
+    const testExit = quote === "'" ? /['\\]/ : /["\\]/;
+    let i = 0;
+    for(;; i++) {
+      // End of long string
+      const char = String.fromCharCode(input.next);
+      if (char === quote && input.peek(1) === qord && input.peek(2) === qord) {
+        break
+      }
+      if (testExit.test(char)) {
+          break
+      }
+      input.advance()
+    }
+    if (i > 0) {
+      input.acceptToken(token)
+    }
+  });
+}
+
 function formatString(quote, len, content, brace, end) {
   return new ExternalTokenizer(input => {
     let start = input.pos
@@ -146,6 +170,8 @@ function formatString(quote, len, content, brace, end) {
   })
 }
 
+export const longString1Content = longStringContent("'")
+export const longString2Content = longStringContent('"')
 export const formatString1 = formatString(singleQuote, 1, formatString1Content, formatString1Brace, formatString1End)
 export const formatString2 = formatString(doubleQuote, 1, formatString2Content, formatString2Brace, formatString2End)
 export const formatString1l = formatString(singleQuote, 3, formatString1lContent, formatString1lBrace, formatString1lEnd)
