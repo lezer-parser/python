@@ -73,7 +73,7 @@ export const indentation = new ExternalTokenizer((input, stack) => {
 })
 
 // Flags used in Context objects
-const cx_Bracketed = 1, cx_DoubleQuote = 2, cx_Long = 4, cx_Raw = 8, cx_Format = 16
+const cx_Bracketed = 1, cx_String = 2, cx_DoubleQuote = 4, cx_Long = 8, cx_Raw = 16, cx_Format = 32
 
 function Context(parent, indent, flags) {
   this.parent = parent
@@ -108,13 +108,13 @@ const stringFlags = new Map([
   [stringStartFRD, cx_Format | cx_Raw | cx_DoubleQuote],
   [stringStartFRL, cx_Format | cx_Raw | cx_Long],
   [stringStartFRLD, cx_Format | cx_Raw | cx_Long | cx_DoubleQuote]
-])
+].map(([term, flags]) => [term, flags | cx_String]))
 
 export const trackIndent = new ContextTracker({
   start: topIndent,
-  reduce(context, term) {
+  reduce(context, term, _, input) {
     if ((context.flags & cx_Bracketed) && bracketed.has(term) ||
-        (term == StringTerm || term == FormatString) && context.flags && context.flags != cx_Bracketed)
+        (term == StringTerm || term == FormatString) && (context.flags & cx_String))
       return context.parent
     return context
   },

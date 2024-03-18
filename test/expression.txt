@@ -64,6 +64,14 @@ Script(ExpressionStatement(FormatString(FormatReplacement(Number),Escape,
          FormatReplacement(VariableName,FormatSelfDoc,FormatConversion),
          FormatReplacement(MemberExpression(VariableName,PropertyName),FormatSelfDoc,FormatSpec))))
 
+# Nested quote types
+
+f"a{'b'}c"
+
+==>
+
+Script(ExpressionStatement(FormatString(FormatReplacement(String))))
+
 # Lambda
 
 something.map(lambda x: x + 1)
