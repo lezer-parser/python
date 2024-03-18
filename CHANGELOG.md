@@ -1,3 +1,9 @@
+## 1.1.13 (2024-03-18)
+
+### Bug fixes
+
+Fix an issue where single-quoted strings inside format strings weren't tokenized properly.
+
 ## 1.1.12 (2024-03-12)
 
 ### Bug fixes
