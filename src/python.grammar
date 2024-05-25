@@ -106,10 +106,10 @@ smallStatement {
 expressions { commaSep<"*" expression | test> }
 
 ImportStatement {
-  kw<"import"> dottedName (kw<"as"> VariableName)? |
+  kw<"import"> (importList | importedNames) |
   kw<"from"> (("." | "...")+ dottedName? | dottedName) kw<"import"> ("*" | importList | importedNames)
 }
-importedNames { commaSep<VariableName | VariableName kw<"as"> VariableName> }
+importedNames { commaSep<dottedName | dottedName kw<"as"> VariableName> }
 importList[@export] { "(" importedNames ")" }
 
 commaSep<expr> { expr ("," expr)* ","? }
