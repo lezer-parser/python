@@ -1,3 +1,9 @@
+## 1.1.14 (2024-05-25)
+
+### Bug fixes
+
+Allow dotted names and list of imports in `import` statements.
+
 ## 1.1.13 (2024-03-18)
 
 ### Bug fixes
