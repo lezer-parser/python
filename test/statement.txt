@@ -261,6 +261,16 @@ Script(
     ExpressionStatement(VariableName))),
   ExpressionStatement(VariableName))
 
+# Script ending in a comment
+
+x = 1
+
+# End
+
+==>
+
+Script(AssignStatement(VariableName,AssignOp,Number),Comment)
+
 # Escaped newlines
 
 x = 1 + \

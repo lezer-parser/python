@@ -270,7 +270,7 @@ skw<term> { @extend[@name={term}]<identifier, term> }
   formatStringSpec { FormatSpec { ":" (formatStringSpecChars | nestedFormatReplacement)* } "}" }
 
   blankLine {
-    blankLineStart space? Comment? newline
+    blankLineStart space? Comment? (newline | eof)
   }
 }
 
