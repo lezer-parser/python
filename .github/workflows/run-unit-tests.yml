@@ -24,11 +24,8 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Install node dependencies
+      - name: Install node dependencies and build parser
         run: npm install
-
-      - name: Build the parser
-        run: npm run build
 
       - name: Run Lezer tests
         run: |
