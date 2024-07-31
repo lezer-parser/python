@@ -28,7 +28,7 @@
     "url" : "https://github.com/lezer-parser/python.git"
   },
   "scripts": {
-    "build": "lezer-generator src/python.grammar -o src/parser && rollup -c && cp src/tokens.js dist/ && cp highlight.js dist/",
+    "build": "lezer-generator src/python.grammar -o src/parser && rollup -c && ls src && cp src/tokens.js dist/ && cp highlight.js dist/",
     "build-debug": "lezer-generator src/python.grammar --names -o src/parser && rollup -c",
     "prepare": "npm run build",
     "test": "mocha test/test-*.js"
