@@ -1,3 +1,9 @@
+## 1.1.15 (2024-12-06)
+
+### Bug fixes
+
+Fix an issue where a commented line at the end of the input would emit an error node.
+
 ## 1.1.14 (2024-05-25)
 
 ### Bug fixes
