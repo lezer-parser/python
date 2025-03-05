@@ -74,7 +74,7 @@ MappingPattern { "{" commaSep<"**" pattern | (VariableName | LiteralPattern) ":"
 
 ClassDefinition { kw<"class"> VariableName TypeParamList? ArgList? Body }
 
-param { VariableName TypeDef? (AssignOp{"="} test)? | "*" VariableName? | "**" VariableName | "/" }
+param { VariableName TypeDef? (AssignOp{"="} test)? | "*" (VariableName TypeDef?)? | "**" VariableName TypeDef? | "/" }
 
 TypeDef { ":" test }
 

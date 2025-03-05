@@ -422,3 +422,15 @@ type Point = tuple[float, float]
 ==>
 
 Script(TypeDefinition(type,VariableName,MemberExpression(VariableName,VariableName,",",VariableName)))
+
+# Rest arg with type
+
+def f(*args: tuple[int]) -> int:
+  return 1
+
+==>
+
+Script(FunctionDefinition(def,VariableName,
+  ParamList(VariableName,TypeDef(MemberExpression(VariableName,VariableName))),
+  TypeDef(VariableName),
+  Body(ReturnStatement(return,Number))))
