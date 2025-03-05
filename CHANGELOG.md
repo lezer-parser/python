@@ -1,3 +1,9 @@
+## 1.1.16 (2025-03-05)
+
+### Bug fixes
+
+Allow type declarations on rest parameters.
+
 ## 1.1.15 (2024-12-06)
 
 ### Bug fixes
