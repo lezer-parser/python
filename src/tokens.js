@@ -180,6 +180,9 @@ export const strings = new ExternalTokenizer((input, stack) => {
         return
       }
       break
+    } else if (input.next == backslash && !escapes && input.peek(1) > -1) {
+      // Raw strings still ignore escaped quotes, weirdly.
+      input.advance(2)
     } else if (input.next == quote && (!long || input.peek(1) == quote && input.peek(2) == quote)) {
       if (input.pos == start) {
         input.acceptToken(stringEnd, long ? 3 : 1)

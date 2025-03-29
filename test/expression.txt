@@ -33,6 +33,14 @@ Script(ExpressionStatement(ContinuedString(String, String)),
        ExpressionStatement(String),
        ExpressionStatement(String))
 
+# Raw string
+
+r"foo\"" + r'\\'
+
+==>
+
+Script(ExpressionStatement(BinaryExpression(String,ArithOp,String)))
+
 # Bracketed continued string
 
 print('00300:'
