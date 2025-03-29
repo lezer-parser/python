@@ -1,3 +1,9 @@
+## 1.1.17 (2025-03-29)
+
+### Bug fixes
+
+Support escaped quotes inside raw strings.
+
 ## 1.1.16 (2025-03-05)
 
 ### Bug fixes
