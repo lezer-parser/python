@@ -368,6 +368,8 @@ match foo:
     pass
   case [a, b, *rest] | (p, q):
     pass
+  case (1, 2) if bar == 2:
+    pass
 
 ==>
 
@@ -392,6 +394,10 @@ Script(MatchStatement(match,VariableName,MatchBody(
         StarPattern(CapturePattern(VariableName))),
       LogicOp,
       SequencePattern(CapturePattern(VariableName),CapturePattern(VariableName))),
+    Body(PassStatement(pass))),
+  MatchClause(case,
+    SequencePattern(LiteralPattern(Number),LiteralPattern(Number)),
+    Guard(if,BinaryExpression(VariableName,CompareOp,Number)),
     Body(PassStatement(pass))))))
 
 # Type Params

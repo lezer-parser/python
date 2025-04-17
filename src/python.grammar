@@ -42,7 +42,7 @@ MatchStatement {
 }
 
 MatchClause {
-  skw<"case"> commaSep<pattern> Guard { kw<"if"> expression }? Body
+  skw<"case"> commaSep<pattern> Guard { kw<"if"> test }? Body
 }
 
 pattern[@isGroup=Pattern] {
