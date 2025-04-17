@@ -1,3 +1,9 @@
+## 1.1.18 (2025-04-17)
+
+### Bug fixes
+
+Fix parsing of match guards with conditional tests.
+
 ## 1.1.17 (2025-03-29)
 
 ### Bug fixes
