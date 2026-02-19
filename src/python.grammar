@@ -15,7 +15,7 @@
   or @left
 }
 
-@top Script { statement+ }
+@top Script { statement* }
 
 @skip { space | newlineBracketed | Comment | blankLine }
 
